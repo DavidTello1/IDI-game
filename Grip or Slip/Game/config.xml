@@ -1,0 +1,98 @@
+<!-- Config file for the game -->
+
+<config>
+  <app framerate_cap="30">
+    <title>Game Development Testbed</title>
+    <organization>UPC</organization>
+  </app>
+	
+  <renderer>
+    <vsync value="false"/>
+  </renderer>
+
+  <window>
+    <resolution width="1024" height="708" scale="1"/>
+    <fullscreen value="false"/>
+    <borderless value="false"/>
+    <resizable value="false"/>
+    <fullscreen_window value="false"/>
+  </window>
+
+  <audio>
+    <music>
+      <folder>audio/music</folder>
+      <track>Best_Friend_8_bits.ogg</track>
+      <track>The_Music_Box_8_bits.ogg</track>
+    </music>
+    <fx>
+      <folder>audio/fx</folder>
+      <sound>Win.wav</sound>
+      <sound>Dead.wav</sound>
+      <sound>Game_over.wav</sound>
+      <sound>Coin.wav</sound>
+      <sound>Click.wav</sound>
+      <sound>Locked.wav</sound>
+    </fx>
+  </audio>
+
+  <gui>
+    <atlas file="gui/atlas.png"/>
+  </gui>
+
+  <file_system>
+    <path>data.zip</path>
+  </file_system>
+
+  <map>
+    <folder>maps/</folder>
+  </map>
+
+  <entitycontroller>
+    <folder>textures/</folder>
+    <sprite_sheet source="Entities.png"/>
+    <player>
+      <size width="32" height="32"/>
+      <position x="64" y="500"/>
+      <gravity value="250"/>
+      <speed x="150" y="500"/>
+      <grounded value ="false"/>
+      <sliding value="false"/>
+      <jumping value="true"/>
+      <grid value="false"/>
+      <gravity_active value="true"/>
+    </player>
+    <grid>
+      <speed x="30" y="30"/>
+    </grid>
+    <flying_enemy>
+      <size width="32" height="32"/>
+      <speed x="80" y="80"/>
+      <sightCollider width ="192" height="192"/>
+      <dead value="false"/>
+    </flying_enemy>
+    <land_enemy>
+      <size width="32" height="32"/>
+      <speed x="60" y="60"/>
+      <sightCollider width ="192" height="96"/>
+      <gravity value="250"/>
+      <dead value="false"/>
+      <lives value="2"/>
+    </land_enemy>
+    <box>
+      <speed x="50" y="50"/>
+    </box>
+  </entitycontroller>
+
+  <scene>
+    <map_name name="level1.tmx"></map_name>
+    <map_name name="level2.tmx"></map_name>
+    <fade_time value="1"/>
+  </scene>
+
+  <main_menu>
+    <menu_bg file="gui/title_bg.png"/>
+    <credits file="gui/credits.png"/>
+    <music vol="40" sfx="100"/>
+  </main_menu>
+
+  </config>
