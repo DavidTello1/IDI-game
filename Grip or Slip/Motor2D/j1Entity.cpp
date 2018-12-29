@@ -67,6 +67,6 @@ void Entity::PositionCollider()
 {
 	Collider.x = position.x;
 	Collider.y = position.y;
-	Collider.w = size.x;
-	Collider.h = size.y;
+	Collider.w = current_animation->GetCurrentFrame().w;
+	Collider.h = current_animation->GetCurrentFrame().h;
 }
