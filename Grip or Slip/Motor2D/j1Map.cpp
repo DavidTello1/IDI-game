@@ -38,9 +38,9 @@ void j1Map::Draw(float dt)
 	{
 		for (uint set = 0; set < data.tilesets.count(); set++)
 		{
-			for (int y = 0; y < data.height; ++y)
+			for (int y = 0; y < data.height; y++)
 			{
-				for (int x = 0; x < data.width; ++x)
+				for (int x = 0; x < data.width; x++)
 				{
 					int tile_id = data.layers[lay]->Get(x, y);
 					if (tile_id > 0)
@@ -349,7 +349,7 @@ bool j1Map::Load(const char* file_name)
 
 	map_loaded = ret;
 
-	return ret;
+	return map_loaded;
 }
 
 // Load map general properties
