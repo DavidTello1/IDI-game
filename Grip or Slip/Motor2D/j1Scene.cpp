@@ -44,7 +44,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-	
+	App->map->Load("maps/level.tmx");
 
 	return true;
 }
@@ -58,6 +58,7 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
+	App->map->Draw(dt);
 
 	return true;
 }
