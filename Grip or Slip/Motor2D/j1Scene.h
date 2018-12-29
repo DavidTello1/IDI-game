@@ -2,7 +2,7 @@
 #define __j1SCENE_H__
 
 #include "j1Module.h"
-#include "UI_Element.h"
+#include "j1App.h"
 
 struct SDL_Texture;
 
@@ -44,8 +44,8 @@ public:
 	void ResetIngameUI();
 	void ResetEnemies();
 
-	void UpdateState(UI_Element* data);
-	void UpdateSimpleUI();
+	//void UpdateState(UI_Element* data);
+	//void UpdateSimpleUI();
 
 public:
 
@@ -89,24 +89,6 @@ private:
 	bool copy = false;
 
 public:
-	//all gui elements
-	UI_Element* ui_life1;
-	UI_Element* ui_life2;
-	UI_Element* ui_life3;
-	UI_Element* ui_coins;
-	UI_Element* ui_coins_text;
-	UI_Element* ui_score;
-	UI_Element* ui_timer;
-
-	UI_Element* ui_window_pause;
-	UI_Element* ui_volume_adjust;
-	UI_Element* ui_adjust_music;
-	UI_Element* ui_adjust_fx;
-	UI_Element* ui_resume;
-	UI_Element* ui_main_menu;
-
-	UI_Element* ui_game_over;
-	UI_Element* ui_game_win;
 
 	SDL_Rect coins_bg;
 	SDL_Rect score_bg;
@@ -114,29 +96,6 @@ public:
 
 	j1Timer timer;
 	j1Timer delay;
-
-
-	//pause
-	UI_Element* pause_window;
-	UI_Element* pause_window_text;
-
-	UI_Element* resume_button;
-	UI_Element* resume_text;
-
-	UI_Element* main_menu_button;
-	UI_Element* main_menu_text;
-
-	UI_Element* save_button;
-	UI_Element* save_text;
-
-	UI_Element* vol_slider_bar;
-	UI_Element* vol_slider_circle;
-	UI_Element* sfx_slider_bar;
-	UI_Element* sfx_slider_circle;
-	UI_Element* volume_text;
-	UI_Element* sfx_text;
-
-
 };
 
 #endif // __j1SCENE_H__

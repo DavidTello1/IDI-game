@@ -4,8 +4,6 @@
 #include "j1Render.h"
 #include "j1Map.h"
 #include "j1Input.h"
-#include "Brofiler\Brofiler.h"
-
 
 j1Box::j1Box() : Entity(entityType::BOX)
 {
@@ -71,8 +69,6 @@ j1Box::j1Box(iPoint pos, iPoint Size, p2SString Type, p2SString side) : Entity(e
 
 bool j1Box::Update(float dt)
 {
-	BROFILER_CATEGORY("Box Update", Profiler::Color::Lavender);
-
 	if (box_flag == false)
 	{
 		CheckSide();

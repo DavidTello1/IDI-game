@@ -7,8 +7,6 @@
 #include "j1EntityController.h"
 #include "j1Player.h"
 #include "j1Map.h"
-#include "j1Gui.h"
-#include "Brofiler\Brofiler.h"
 
 #include <math.h>
 #include "SDL\include\SDL_render.h"
@@ -40,7 +38,6 @@ bool j1SceneChange::Start()
 
 bool j1SceneChange::Update(float dt)
 {
-	BROFILER_CATEGORY("SceneChange Update", Profiler::Color::Red);
 
 	if (current_step == fade_step::none)
 	{
@@ -76,7 +73,6 @@ bool j1SceneChange::Update(float dt)
 			if (switchtimer.ReadSec() >= fadetime)
 			{
 				to_disable->Disable();
-				App->gui->CleanUp();
 				App->map->CleanUp();
 				App->entitycontroller->DeleteEntities();
 				if (to_disable == App->scene)
@@ -84,7 +80,6 @@ bool j1SceneChange::Update(float dt)
 					App->entitycontroller->Disable();
 				}
 
-				App->gui->Start();
 				to_enable->Enable();
 				if (to_enable == App->scene)
 				{

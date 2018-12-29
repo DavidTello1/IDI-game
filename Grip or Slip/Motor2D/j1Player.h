@@ -36,27 +36,17 @@ public:
 	void CleanUp();
 
 	// Positions the player in the start of the current level
-	 void Restart();
+	void Restart();
 
 	void ChangeAnimation();
 	void LoadAnimations();
 	void CameraOnPlayer();
 
-public: 
+public:
 
 	Animation	idle;
-	Animation	move_anim;
-	Animation	jump_anim;
-	Animation	falling_anim;
-	Animation	grip_idle;
-	Animation	grip_move;
-	Animation	slide_anim;
-	Animation	landing_anim;
-	Animation	grip_anim;
-	Animation	dying;
-	Animation	start_attacking;
-	Animation	attacking;
-	Animation	end_attacking;
-};
+	Animation	jump;
+	Animation	slide;
 
+};
 #endif // !__J1PLAYER_H__

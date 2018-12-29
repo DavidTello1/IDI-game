@@ -6,7 +6,6 @@
 #include "j1Window.h"
 #include "j1Map.h"
 #include "j1Scene.h"
-#include "Brofiler\Brofiler.h"
 #include <cmath>
 
 
@@ -32,8 +31,6 @@ bool j1Map::Awake(pugi::xml_node& config)
 
 void j1Map::Draw(float dt)
 {
-	BROFILER_CATEGORY("Map Draw", Profiler::Color::Crimson);
-
 	if (map_loaded == false)
 		return;
 
@@ -583,8 +580,6 @@ bool j1Map::SwitchMaps2(p2SString* new_map)
 
 void j1Map::RotateMaps(float dt)
 {
-	BROFILER_CATEGORY("RotateMaps", Profiler::Color::Purple);
-
 	if (rotate == true) //rotate
 	{
 		if (angle >= 90)

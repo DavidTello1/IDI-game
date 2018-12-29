@@ -2,19 +2,13 @@
 #include "j1App.h"
 #include "j1Audio.h"
 #include "j1Render.h"
-#include "j1Pathfinding.h"
 #include "j1Scene.h"
 #include "j1SceneChange.h"
 #include "j1Entity.h"
 #include "j1Player.h"
-#include "j1Grid.h"
-#include "j1FlyingEnemy.h"
-#include "j1LandEnemy.h"
 #include "j1Box.h"
-#include "j1Coins.h"
 #include "j1Textures.h"
 
-#include "Brofiler\Brofiler.h"
 #include "PugiXml/src/pugixml.hpp"
 
 j1EntityController::j1EntityController()
@@ -46,8 +40,6 @@ bool j1EntityController::Start()
 
 bool j1EntityController::Update(float dt)
 {
-	BROFILER_CATEGORY("EntityController Update", Profiler::Color::Blue);
-
 	bool ret = true;
 
 	if (App->map->debug)
@@ -72,8 +64,6 @@ bool j1EntityController::Update(float dt)
 
 bool j1EntityController::PostUpdate()
 {
-	BROFILER_CATEGORY("EntityController PostUpdate", Profiler::Color::Blue);
-
 	bool ret = true;
 
 	if (App->scene->pause == false)
@@ -386,24 +376,8 @@ Entity* j1EntityController::AddEntity(Entity::entityType type, iPoint position, 
 		tmp = new j1Box(position, Size, Type, side);
 		break;
 
-	case Entity::entityType::FLYING_ENEMY:
-		tmp = new FlyingEnemy(position);
-		break;
-
-	case Entity::entityType::LAND_ENEMY:
-		tmp = new LandEnemy(position);
-		break;
-
-	case Entity::entityType::GRID:
-		tmp = new j1Grid(position, Size, Type);
-		break;
-
 	case Entity::entityType::PLAYER:
 		tmp = new j1Player();
-		break;
-
-	case Entity::entityType::COIN:
-		tmp = new j1Coins(position, Size);
 		break;
 	}
 
