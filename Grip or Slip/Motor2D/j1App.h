@@ -13,14 +13,11 @@ class j1Input;
 class j1Render;
 class j1Textures;
 class j1Audio;
-class j1PathFinding;
 class j1Scene;
-class j1MainMenu;
 class j1Map;
 class j1SceneChange;
 class j1EntityController;
 class j1Fonts;
-class j1Gui;
 
 class j1App
 {
@@ -53,12 +50,8 @@ public:
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
 
-	void LoadGame();
-	void SaveGame() const;
-	void GetSaveGames(p2List<p2SString>& list_to_fill) const;
-
-	// Load config file
-	pugi::xml_node LoadConfig(pugi::xml_document&) const;
+	// Save
+	bool SavegameNow() const;
 
 private:
 
@@ -77,10 +70,6 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
-	// Load / Save
-	bool LoadGameNow();
-	bool SavegameNow() const;
-
 public:
 
 	// Modules
@@ -89,14 +78,11 @@ public:
 	j1Render*			render = NULL;
 	j1Textures*			tex = NULL;
 	j1Audio*			audio = NULL;
-	j1PathFinding*		pathfinding = NULL;
 	j1Scene*			scene = NULL;
-	j1MainMenu*			main_menu = NULL;
 	j1Map*				map = NULL;
 	j1SceneChange*		scenechange = NULL;
 	j1EntityController* entitycontroller = NULL;
 	j1Fonts*			font = NULL;
-	j1Gui*				gui = NULL;
 
 	bool				fpsCapON = true;
 	bool				vsyncON = false;
@@ -111,9 +97,6 @@ private:
 	p2SString			title;
 	p2SString			organization;
 
-	mutable bool		want_to_save = false;
-	bool				want_to_load = false;
-	p2SString			load_game;
 	mutable p2SString	save_game;
 
 	int					ms_capped = -1;

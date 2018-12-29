@@ -19,21 +19,13 @@ public:
 	bool Update(float dt);
 	bool PostUpdate();
 	bool CleanUp();
-	bool Save(pugi::xml_node&) const;
-	bool Load(pugi::xml_node&);
 	bool Restart();
-	void DeleteEnemies();
 	bool Draw(float dt);
 	bool DebugDraw();
 
-	Entity* AddEntity(Entity::entityType type, iPoint position, iPoint Size, p2SString Type = "0", p2SString Side = "0");
+	Entity* AddEntity(Entity::entityType type, iPoint position, iPoint Size);
 	bool DeleteEntity(Entity* entity);
 	void DeleteEntities();
-	void EnemyColliderCheck();
-
-	bool CopySave(pugi::xml_node&);
-	bool AppendSave(pugi::xml_node& source, pugi::xml_node& destiny);
-	void PlayerRestart();
 
 public:
 	p2SString		folder;
@@ -41,9 +33,6 @@ public:
 	SDL_Texture*	texture;
 	p2List<Entity*> Entities;
 
-	SDL_Texture*	debug_tex;
-
-	bool draw_path = false;
 	bool godmode = false;
 };
 

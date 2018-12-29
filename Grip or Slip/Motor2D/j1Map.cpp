@@ -34,74 +34,66 @@ void j1Map::Draw(float dt)
 	if (map_loaded == false)
 		return;
 
-	if (rotate == true || rotate_back == true || rotated == true) //rotate
+	for (uint lay = 0; lay < data.layers.count(); lay++)
 	{
-		RotateMaps(dt);
-	}
-
-	else //draw normal
-	{
-		for (uint lay = 0; lay < data.layers.count(); lay++)
+		for (uint set = 0; set < data.tilesets.count(); set++)
 		{
-			for (uint set = 0; set < data.tilesets.count(); set++)
+			for (int y = 0; y < data.height; ++y)
 			{
-				for (int y = 0; y < data.height; ++y)
+				for (int x = 0; x < data.width; ++x)
 				{
-					for (int x = 0; x < data.width; ++x)
+					int tile_id = data.layers[lay]->Get(x, y);
+					if (tile_id > 0)
 					{
-						int tile_id = data.layers[lay]->Get(x, y);
-						if (tile_id > 0)
-						{
-							TileSet* tileset = GetTilesetFromTileId(tile_id);
-							SDL_Rect r = tileset->GetTileRect(tile_id);
-							iPoint pos = MapToWorld(x, y);
+						TileSet* tileset = GetTilesetFromTileId(tile_id);
+						SDL_Rect r = tileset->GetTileRect(tile_id);
+						iPoint pos = MapToWorld(x, y);
 
-							if (data.layers[lay]->name == "Background")
-							{
-								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
-							}
-							else
-							{
-								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
-							}
+						if (data.layers[lay]->name == "Background")
+						{
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
+						}
+						else
+						{
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
 						}
 					}
 				}
 			}
 		}
-		if (debug == true) //debug draw
+	}
+	if (debug == true) //debug draw
+	{
+		SDL_Rect collisions;
+		for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
 		{
-			SDL_Rect collisions;
-			for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
+			if (object->data->name == ("Collision"))
 			{
-				if (object->data->name == ("Collision"))
+				for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
 				{
-					for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
+					collisions.x = objectdata->data->x;
+					collisions.y = objectdata->data->y;
+					collisions.w = objectdata->data->width;
+					collisions.h = objectdata->data->height;
+					if (objectdata->data->name == "Floor") //green
 					{
-						collisions.x = objectdata->data->x;
-						collisions.y = objectdata->data->y;
-						collisions.w = objectdata->data->width;
-						collisions.h = objectdata->data->height;
-						if (objectdata->data->name == "Floor") //green
-						{
-							App->render->DrawQuad(collisions, 0, 255, 0, 50);
-						}
-						else if (objectdata->data->name == "Spikes") //red
-						{
-							App->render->DrawQuad(collisions, 255, 0, 0, 50);
-						}
-						else if (objectdata->data->name == "Wall") //yellow
-						{
-							App->render->DrawQuad(collisions, 255, 255, 0, 50);
-						}
-						else if (objectdata->data->name == "Grid" && objectdata->data->type == "Static") //blue
-						{
-							App->render->DrawQuad(collisions, 0, 0, 255, 50);
-						}
-						else if (objectdata->data->name == "Ceiling") //black
-						{
-							App->render->DrawQuad(collisions, 0, 0, 0, 50);
-						}
+						App->render->DrawQuad(collisions, 0, 255, 0, 50);
+					}
+					else if (objectdata->data->name == "Spikes") //red
+					{
+						App->render->DrawQuad(collisions, 255, 0, 0, 50);
+					}
+					else if (objectdata->data->name == "Wall") //yellow
+					{
+						App->render->DrawQuad(collisions, 255, 255, 0, 50);
+					}
+					else if (objectdata->data->name == "Grid" && objectdata->data->type == "Static") //blue
+					{
+						App->render->DrawQuad(collisions, 0, 0, 255, 50);
+					}
+					else if (objectdata->data->name == "Ceiling") //black
+					{
+						App->render->DrawQuad(collisions, 0, 0, 0, 50);
 					}
 				}
 			}
@@ -557,141 +549,6 @@ bool j1Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 
 			properties.list.add(property);
 		}
-	}
-	return ret;
-}
-
-bool j1Map::SwitchMaps(p2SString* new_map)
-{
-	CleanUp();
-	Load(new_map->GetString());
-	App->scene->to_end = false;
-
-	return true;
-}
-
-bool j1Map::SwitchMaps2(p2SString* new_map)
-{
-	CleanUp();
-	Load(new_map->GetString());
-
-	return true;
-}
-
-void j1Map::RotateMaps(float dt)
-{
-	if (rotate == true) //rotate
-	{
-		if (angle >= 90)
-		{
-			rotate = false;
-			rotated = true;
-		}
-		else
-		{
-			for (uint lay = 0; lay < data.layers.count(); lay++)
-			{
-				for (uint set = 0; set < data.tilesets.count(); set++)
-				{
-					for (int y = 0; y < data.height; ++y)
-					{
-						for (int x = 0; x < data.width; ++x)
-						{
-							int tile_id = data.layers[lay]->Get(x, y);
-							if (tile_id > 0)
-							{
-								TileSet* tileset = GetTilesetFromTileId(tile_id);
-
-								SDL_Rect r = tileset->GetTileRect(tile_id);
-								iPoint pos = MapToWorld(x, y);
-								iPoint new_pos;
-
-								new_pos.x = pos.x * cos(angle* 3.14159265359 / 180) + pos.y * sin(angle* 3.14159265359 / 180);
-								new_pos.y = pos.y * cos(angle* 3.14159265359 / 180) - pos.x * sin(angle* 3.14159265359 / 180);
-								App->render->Blit(tileset->texture, new_pos.x, new_pos.y, &r, SDL_FLIP_NONE, 1.0f, -angle);
-							}
-						}
-					}
-				}
-			}
-			angle += ceilf(50*dt);
-		}
-	}
-	else if (rotated == true)
-	{
-		rotated = false;
-		angle = 0.0;
-		rotate_back = true;
-	}
-	else if (rotate_back == true) //rotate backwards
-	{
-		if (angle >= 90.0)
-		{
-			rotate_back = false;
-			rotate_end = true;
-		}
-		else
-		{
-			for (uint lay = 0; lay < data.layers.count(); lay++)
-			{
-				for (uint set = 0; set < data.tilesets.count(); set++)
-				{
-					for (int y = 0; y < data.height; ++y)
-					{
-						for (int x = 0; x < data.width; ++x)
-						{
-							int tile_id = data.layers[lay]->Get(x, y);
-							if (tile_id > 0)
-							{
-								TileSet* tileset = GetTilesetFromTileId(tile_id);
-								SDL_Rect r = tileset->GetTileRect(tile_id);
-								iPoint pos = MapToWorld(-(y + 1), x);
-								iPoint new_pos;
-
-								new_pos.x = pos.x * cos(angle * PI / 180) + pos.y * sin(angle * PI / 180);
-								new_pos.y = pos.y * cos(angle * PI / 180) - pos.x * sin(angle * PI / 180);
-								App->render->Blit(tileset->texture, new_pos.x, new_pos.y - data.tile_height, &r, SDL_FLIP_NONE, 1.0f, -angle + 90);
-							}
-						}
-					}
-				}
-			}
-			angle += ceilf(50 * dt);
-		}
-	}
-}
-
-bool j1Map::CreateWalkabilityMap(int& width, int& height, uchar** buffer) const
-{
-	bool ret = false;
-	p2List_item<MapLayer*>* item;
-	item = data.layers.start;
-	for (item = data.layers.start; item != NULL; item = item->next)
-	{
-		MapLayer* layer = item->data;
-		if (layer->properties.Get("Navigation") == 0)
-			continue;
-		uchar* map = new uchar[layer->width*layer->height];
-		memset(map, 1, layer->width*layer->height);
-		for (int y = 0; y < data.height; ++y)
-		{
-			for (int x = 0; x < data.width; ++x)
-			{
-				int i = (y*layer->width) + x;
-				int tile_id = layer->Get(x, y);
-				TileSet* tileset = (tile_id > 0) ? GetTilesetFromTileId(tile_id) : NULL;
-				if (tileset != NULL)
-				{
-					map[i] = (tile_id - tileset->firstgid) > 0 ? 0 : 1;
-					
-				}
-			}
-		}
-		*buffer = map;
-		width = data.width;
-		height = data.height;
-		ret = true;
-		break;
 	}
 	return ret;
 }

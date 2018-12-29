@@ -155,17 +155,8 @@ public:
 	// Load new map
 	bool Load(const char* path);
 
-	//Unloads the current map and loads a new one 
-	bool SwitchMaps(p2SString* new_map);
-
-	//same as switchmaps but without scene->to_end
-	bool SwitchMaps2(p2SString* new_map);
-
 	iPoint MapToWorld(int x, int y) const;
 	iPoint WorldToMap(int x, int y) const;
-
-	void RotateMaps(float dt);
-	bool CreateWalkabilityMap(int& width, int& height, uchar** buffer) const;
 
 private:
 
@@ -182,11 +173,7 @@ public:
 
 	MapData				data;
 	bool				debug = false;
-	bool				rotate = false;
-	bool				rotate_back = false;
-	bool				rotated = false;
-	bool				rotate_end = true;
-	double				angle = 0.0;
+
 private:
 
 	pugi::xml_document	map_file;

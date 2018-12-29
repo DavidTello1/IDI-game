@@ -31,15 +31,8 @@ public:
 	//returns true if changing
 	bool IsChanging() const;
 
-	//Change Scene
-	bool SwitchScene(j1Module* SceneIn, j1Module* SceneOut);
-
-	//returns true if switching
-	bool IsSwitching() const;
-
 public:
 	bool fading = false;
-	bool ContinueGame = false;
 
 private:
 	enum fade_step
@@ -54,15 +47,6 @@ private:
 	uint start_time = 0;
 	uint total_time = 0;
 	SDL_Rect screen;
-
-	float fadetime = 1.0f;
-	j1Module* to_enable = nullptr;
-	j1Module* to_disable = nullptr;
-	j1Timer switchtimer;
-
-	bool map = false;
-	bool scene = false;
-
 };
 
 #endif // __j1SceneChange_H__

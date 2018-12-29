@@ -22,8 +22,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 {
 	PERF_START(ptimer);
 
-	want_to_save = want_to_load = false;
-
 	input = new j1Input();
 	win = new j1Window();
 	render = new j1Render();
@@ -85,9 +83,7 @@ bool j1App::Awake()
 
 	bool ret = false;
 
-	save_game = load_game = "save_game.xml";
-
-	config = LoadConfig(config_file);
+	save_game =  "save_game.xml";
 
 	if(config.empty() == false)
 	{
@@ -172,20 +168,6 @@ bool j1App::Update()
 }
 
 // ---------------------------------------------
-pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
-{
-	pugi::xml_node ret;
-	pugi::xml_parse_result result = config_file.load_file("config.xml");
-
-	if(result == NULL)
-		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
-	else
-		ret = config_file.child("config");
-
-	return ret;
-}
-
-// ---------------------------------------------
 void j1App::PrepareUpdate()
 {
 	frame_count++;
@@ -197,13 +179,6 @@ void j1App::PrepareUpdate()
 // ---------------------------------------------
 void j1App::FinishUpdate()
 {
-	if (want_to_save == true)
-		SavegameNow();
-
-	if (want_to_load == true)
-		LoadGameNow();
-
-
 	// Framerate calculations
 	if (last_sec_frame_time.Read() > 1000)
 	{
@@ -346,145 +321,9 @@ const char* j1App::GetOrganization() const
 	return organization.GetString();
 }
 
-// Load / Save
-void j1App::LoadGame()
-{
-	// we should be checking if that file actually exist
-	// from the "GetSaveGames" list
-	want_to_load = true;
-	//load_game.create("%s%s", fs->GetSaveDirectory(), file);
-}
-
-// ---------------------------------------
-void j1App::SaveGame() const
-{
-	// we should be checking if that file actually exist
-	// from the "GetSaveGames" list ... should we overwrite ?
-
-	want_to_save = true;
-	//save_game.create(file);
-}
-
-// ---------------------------------------
-void j1App::GetSaveGames(p2List<p2SString>& list_to_fill) const
-{
-	// need to add functionality to file_system module for this to work
-}
-
-bool j1App::LoadGameNow()
-{
-	bool ret = false;
-
-	pugi::xml_document data;
-	pugi::xml_node root;
-
-	pugi::xml_parse_result result = data.load_file(load_game.GetString());
-
-	if(result != NULL)
-	{
-		LOG("Loading new Game State from %s...", load_game.GetString());
-
-		root = data.child("game_state");
-
-		p2List_item<j1Module*>* item = modules.start;
-		ret = true;
-
-		while(item != NULL && ret == true)
-		{
-			//if (item->data->name == "scene") //load current map's last saved state
-			//{
-			//	root.child("scene").child("currentMap").attribute("num").set_value(scene->currentMap);
-			//}
-			ret = item->data->Load(root.child(item->data->name.GetString()));
-			item = item->next;
-		}
-
-		data.reset();
-		if(ret == true)
-			LOG("...finished loading");
-		else
-			LOG("...loading process interrupted with error on module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
-	}
-	else
-		LOG("Could not parse game state xml file %s. pugi error: %s", load_game.GetString(), result.description());
-
-	want_to_load = false;
-	return ret;
-}
-
 bool j1App::SavegameNow() const
 {
 	bool ret = true;
-
-	LOG("Saving Game State to %s...", save_game.GetString());
-
-	// xml object were we will store all data first
-	pugi::xml_document data;
-	pugi::xml_node root;
-	root = data.append_child("game_state");
-
-	pugi::xml_document save_data;
-	pugi::xml_parse_result result = save_data.load_file(save_game.GetString());
-	pugi::xml_document copy_data;
-	pugi::xml_node copy_root;
-	if (result == true)
-	{
-		copy_root = copy_data.append_child("game_state");
-
-		entitycontroller->CopySave(copy_root); //write currentmap data to copysave.xml
-		copy_data.save_file("copysave.xml");
-	}
-
-	p2List_item<j1Module*>* item = modules.start; //save all modules
-	while(item != NULL && ret == true)
-	{
-		if (item->data->active)
-		{
-			ret = item->data->Save(root.append_child(item->data->name.GetString()));
-		}
-		item = item->next;
-	}
-
-	if (ret == true)
-	{
-		data.save_file(save_game.GetString()); //save file
-
-		if (result == true) //if there was a previous save_game.xml
-		{
-			save_data.load_file(save_game.GetString()); //load new save_game.xml to save_data
-			pugi::xml_node save_root = save_data.child("game_state").child("entitycontroller");
-			
-			copy_root = copy_data.child("game_state");
-
-			if (scene->currentMap == 0)
-			{
-				scene->currentMap = 1;
-			}
-			else if (scene->currentMap == 1)
-			{
-				scene->currentMap = 0;
-			}
-
-			entitycontroller->AppendSave(copy_root, save_root); //write copysave.xml data to savegame.xml
-
-			if (scene->currentMap == 0)
-			{
-				scene->currentMap = 1;
-			}
-			else if (scene->currentMap == 1)
-			{
-				scene->currentMap = 0;
-			}
-
-			save_data.save_file(save_game.GetString()); //save save_game with copysave data in it
-		}
-
-		LOG("... finished saving", save_game.GetString());
-	}
-	else
-		LOG("Save process halted from an error in module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
-
-	data.reset();
-	want_to_save = false;
+	//save
 	return ret;
 }

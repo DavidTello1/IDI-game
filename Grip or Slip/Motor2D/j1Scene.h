@@ -33,16 +33,7 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	bool Load(pugi::xml_node& data);
-	bool Save(pugi::xml_node& data) const;
-
-	bool Load_level(int map);
 	void SpawnEnemies();
-	void SpawnEntities();
-	void SaveAndChange();
-	void ResetBoxPos();
-	void ResetIngameUI();
-	void ResetEnemies();
 
 	//void UpdateState(UI_Element* data);
 	//void UpdateSimpleUI();
@@ -52,18 +43,10 @@ public:
 	p2List<p2SString*> map_names;
 	uint currentMap = 0;
 	float fade_time = 0.0f;
-	bool to_end = false;
-	bool change = false;
 	bool pause = false;
 
 	bool godmode = false;
 
-	bool box_1_side = false;
-	bool box_2_side = false;
-	bool box_3_side = false;
-	bool box_4_side = false;
-
-	uint coins = 0;
 	uint score = 0;
 	uint countdown = 0;
 
@@ -74,19 +57,12 @@ public:
 	char current_vol[20] = "MUSIC: 0";
 	char current_sfx[20] = "SOUND: 0";
 
-
-	bool finish_1 = false;
-	bool finish_2 = false;
-	bool end_game = false;
-
-	iPoint x_limit;
 	p2List_item<p2SString>* current_track;
 	p2List_item<p2SString>* current_fx;
 
 private:
 
 	SDL_Texture* debug_tex;
-	bool copy = false;
 
 public:
 
