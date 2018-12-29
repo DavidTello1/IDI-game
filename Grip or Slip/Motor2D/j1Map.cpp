@@ -53,52 +53,58 @@ void j1Map::Draw(float dt)
 						{
 							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
 						}
+
+						else if (data.layers[lay]->name == "Floor")
+						{
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed*2);
+						}
+
 						else
 						{
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
 						}
 					}
 				}
 			}
 		}
 	}
-	if (debug == true) //debug draw
-	{
-		SDL_Rect collisions;
-		for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
-		{
-			if (object->data->name == ("Collision"))
-			{
-				for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
-				{
-					collisions.x = objectdata->data->x;
-					collisions.y = objectdata->data->y;
-					collisions.w = objectdata->data->width;
-					collisions.h = objectdata->data->height;
-					if (objectdata->data->name == "Floor") //green
-					{
-						App->render->DrawQuad(collisions, 0, 255, 0, 50);
-					}
-					else if (objectdata->data->name == "Spikes") //red
-					{
-						App->render->DrawQuad(collisions, 255, 0, 0, 50);
-					}
-					else if (objectdata->data->name == "Wall") //yellow
-					{
-						App->render->DrawQuad(collisions, 255, 255, 0, 50);
-					}
-					else if (objectdata->data->name == "Grid" && objectdata->data->type == "Static") //blue
-					{
-						App->render->DrawQuad(collisions, 0, 0, 255, 50);
-					}
-					else if (objectdata->data->name == "Ceiling") //black
-					{
-						App->render->DrawQuad(collisions, 0, 0, 0, 50);
-					}
-				}
-			}
-		}
-	}
+	//if (debug == true) //debug draw
+	//{
+	//	SDL_Rect collisions;
+	//	for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
+	//	{
+	//		if (object->data->name == ("Collision"))
+	//		{
+	//			for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
+	//			{
+	//				collisions.x = objectdata->data->x;
+	//				collisions.y = objectdata->data->y;
+	//				collisions.w = objectdata->data->width;
+	//				collisions.h = objectdata->data->height;
+	//				if (objectdata->data->name == "Floor") //green
+	//				{
+	//					App->render->DrawQuad(collisions, 0, 255, 0, 50);
+	//				}
+	//				else if (objectdata->data->name == "Spikes") //red
+	//				{
+	//					App->render->DrawQuad(collisions, 255, 0, 0, 50);
+	//				}
+	//				else if (objectdata->data->name == "Wall") //yellow
+	//				{
+	//					App->render->DrawQuad(collisions, 255, 255, 0, 50);
+	//				}
+	//				else if (objectdata->data->name == "Grid" && objectdata->data->type == "Static") //blue
+	//				{
+	//					App->render->DrawQuad(collisions, 0, 0, 255, 50);
+	//				}
+	//				else if (objectdata->data->name == "Ceiling") //black
+	//				{
+	//					App->render->DrawQuad(collisions, 0, 0, 0, 50);
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 int Properties::Get(const char* value, int default_value) const
@@ -449,7 +455,7 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 	}
 	else
 	{
-		set->texture = App->tex->Load(PATH(folder.GetString(), image.attribute("source").as_string()));
+		set->texture = App->tex->Load(image.attribute("source").as_string());
 		int w, h;
 		SDL_QueryTexture(set->texture, NULL, NULL, &w, &h);
 		set->tex_width = image.attribute("width").as_int();

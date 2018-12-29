@@ -32,7 +32,7 @@ bool j1EntityController::Awake(pugi::xml_node &config)
 bool j1EntityController::Start()
 {
 	bool ret = true;
-	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
+	//texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
 	return ret;
 }
 
