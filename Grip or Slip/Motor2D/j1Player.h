@@ -24,6 +24,7 @@ public:
 	//Called before the first frame
 	bool Start();
 
+	bool PreUpdate();
 	bool Update(float dt);
 	bool PostUpdate();
 
@@ -48,5 +49,27 @@ public:
 	Animation	jump;
 	Animation	slide;
 
+	int			slide_pos;
+	int			top_pos;
+
+	int			dx;
+	int			dy;
+
+	bool		right;
+	bool		left;
+	bool		jumping;
+	bool		start_sliding;
+	bool		sliding;
+	bool		finish_sliding;
+	bool		falling;
+
+
+	enum Controls
+	{
+		WASD,
+		ARROWS,
+		UI_BUTTONS,
+		DRAG_MOUSE
+	}controls;
 };
 #endif // !__J1PLAYER_H__

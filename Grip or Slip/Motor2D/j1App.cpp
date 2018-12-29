@@ -81,7 +81,7 @@ bool j1App::Awake()
 	pugi::xml_node		config;
 	pugi::xml_node		app_config;
 
-	bool ret = false;
+	bool ret = true;
 
 	save_game =  "save_game.xml";
 

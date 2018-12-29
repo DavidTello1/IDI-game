@@ -29,7 +29,7 @@ public:
 		assert(last_frame < MAX_FRAMES);
 	}
 
-	SDL_Rect& GetCurrentFrame(float dt)
+	SDL_Rect& GetCurrentFrame(float dt = 1.0f)
 	{
 		float tmp = speed;
 

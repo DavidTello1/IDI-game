@@ -26,6 +26,7 @@ public:
 	Entity(entityType type);
 	Entity(entityType type, iPoint position, iPoint Size);
 	~Entity();
+
 	virtual bool Awake(pugi::xml_node & config) { return true; };
 	virtual bool Start() { return true; };
 	virtual bool PreUpdate() { return true; };
@@ -39,10 +40,10 @@ public:
 
 	void Collider_Overlay();
 	void PositionCollider();
-	void Draw(float dt);
+	void Draw();
 
 public:
-	Animation* Current_Animation = nullptr;
+	Animation* current_animation = nullptr;
 	entityType type;
 	
 	iPoint position;
@@ -50,11 +51,11 @@ public:
 	iPoint speed;
 	int gravity;
 	int lives;
+	int jumpSpeed;
 
 	SDL_Rect Collider;
 	
 	bool flip = false;
-	int jumpSpeed;
 	bool dead = false;
 	bool grounded = false;
 	bool jumping = false;

@@ -22,6 +22,7 @@ j1EntityController::~j1EntityController()
 bool j1EntityController::Awake(pugi::xml_node &config)
 {
 	bool ret = true;
+
 	folder.create(config.child("folder").child_value());
 	texture_path = config.child("sprite_sheet").attribute("source").as_string();
 
@@ -33,6 +34,21 @@ bool j1EntityController::Start()
 	bool ret = true;
 	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
 	return ret;
+}
+
+bool j1EntityController::PreUpdate()
+{
+	if (App->scene->pause == false)
+	{
+		p2List_item<Entity*>* tmp = Entities.start;
+		while (tmp != nullptr)
+		{
+			tmp->data->PreUpdate();
+			tmp = tmp->next;
+		}
+	}
+
+	return true;
 }
 
 bool j1EntityController::Update(float dt)
@@ -124,13 +140,13 @@ bool j1EntityController::Draw(float dt)
 		}
 		else
 		{
-			tmp->data->Draw(dt);
+			tmp->data->Draw();
 		}
 		tmp = tmp->next;
 	}
 	if (tmp2 != nullptr)
 	{
-		tmp2->data->Draw(dt); //draw player last
+		tmp2->data->Draw(); //draw player last
 	}
 
 	return ret;

@@ -5,6 +5,7 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "j1Entity.h"
+#include "j1Player.h"
 
 class Entity;
 
@@ -16,6 +17,7 @@ public:
 
 	bool Awake(pugi::xml_node & config);
 	bool Start();
+	bool PreUpdate();
 	bool Update(float dt);
 	bool PostUpdate();
 	bool CleanUp();
@@ -32,6 +34,8 @@ public:
 	p2SString		texture_path;
 	SDL_Texture*	texture;
 	p2List<Entity*> Entities;
+
+	j1Player*		info;
 
 	bool godmode = false;
 };

@@ -29,15 +29,15 @@ Entity::~Entity()
 {
 }
 
-void Entity::Draw(float dt)
+void Entity::Draw()
 {
 	if (flip)
 	{
-		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(Current_Animation->GetCurrentFrame(dt)), SDL_FLIP_HORIZONTAL);
+		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_HORIZONTAL);
 	}
 	else
 	{
-		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(Current_Animation->GetCurrentFrame(dt)), SDL_FLIP_NONE);
+		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_NONE);
 	}
 }
 
@@ -53,9 +53,9 @@ void Entity::Collider_Overlay()
 		{
 			if (SDL_IntersectRect(&Collider, &tmp->data->Collider, &result))
 			{
-				box_collision = true;
-				box_position = tmp->data->position;
-				box_moving = tmp->data->box_moving;
+				//box_collision = true;
+				//box_position = tmp->data->position;
+				//box_moving = tmp->data->box_moving;
 			}
 		}
 

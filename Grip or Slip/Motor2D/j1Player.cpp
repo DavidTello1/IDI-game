@@ -13,6 +13,17 @@
 
 j1Player::j1Player() : Entity(entityType::PLAYER)
 {
+	jumping = false;
+	right = false;
+	left = false;
+	sliding = false;
+	start_sliding = false;
+	falling = false;
+
+	LoadAnimations();
+
+	current_animation = &idle;
+
 }
 
 j1Player::~j1Player()
@@ -34,11 +45,8 @@ bool j1Player::Awake(pugi::xml_node & config)
 	speed.x = config.child("speed").attribute("x").as_int();
 	speed.y = config.child("speed").attribute("y").as_int();
 	gravity = config.child("gravity").attribute("value").as_int();
-	gravity_active = config.child("gravity_active").attribute("value").as_bool();
 
 	dead = false;
-	final_speed = { 0,0 };
-	first_ground = false;
 
 	return ret;
 }
@@ -46,7 +54,7 @@ bool j1Player::Awake(pugi::xml_node & config)
 bool j1Player::Start()
 {	
 	LoadAnimations();
-	Current_Animation = &idle;
+	current_animation = &idle;
 
 	//Sets the player in the start position
 	for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
@@ -68,10 +76,105 @@ bool j1Player::Start()
 	return true;
 }
 
+bool j1Player::PreUpdate()
+{
+	if (controls == WASD)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+		{
+			right = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+		{
+			left = true;
+		}
+		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && !jumping && !falling)
+		{
+			jumping = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+		{
+			sliding = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP && sliding)
+		{
+			finish_sliding = true;
+		}
+	}
+	else if (controls == ARROWS)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+		{
+			right = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+		{
+			left = true;
+		}
+		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && !jumping && !falling)
+		{
+			jumping = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+		{
+			start_sliding = true;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP && sliding)
+		{
+			finish_sliding = true;
+		}
+	}
+	else if (controls == UI_BUTTONS)
+	{
+		//...
+	}
+	else if (controls == DRAG_MOUSE)
+	{
+		//...
+	}
+	return true;
+}
+
 bool j1Player::Update(float dt)
 {
-	
+	dx = 0;
+	dy = 0;
 
+	//gravity acting first
+	if (!grounded)
+	{
+		speed.y += gravity;
+	}
+
+	if (right)
+		dx += speed.x;
+
+	if (left)
+		dx -= speed.x;
+
+	if (jumping)
+	{
+		grounded = false;
+		speed.y = jumpSpeed;
+		dy -= speed.y;
+		if (position.y <= top_pos)
+		{
+			jumping = false;
+			falling = true;
+		}
+	}
+
+	if (start_sliding)
+	{
+		speed.y -= gravity;
+		if (position.y <= slide_pos)
+		{
+			start_sliding = false;
+			sliding = true;
+		}
+	}
+
+	
 	return true;
 }
 
@@ -99,20 +202,7 @@ bool j1Player::PostUpdate()
 
 void j1Player::Load(pugi::xml_node& data)
 {
-	size.x = data.child("size").attribute("width").as_int();
-	size.y = data.child("size").attribute("height").as_int();
-	position.x = data.child("position").attribute("x").as_int();
-	position.y = data.child("position").attribute("y").as_int();
-	gravity = data.child("gravity").attribute("value").as_int();
-	speed.x = data.child("speed").attribute("x").as_int();
-	speed.y = data.child("speed").attribute("y").as_int();
-	grounded = data.child("grounded").attribute("value").as_bool();
-	sliding = data.child("sliding").attribute("value").as_bool();
-	jumping = data.child("jumping").attribute("value").as_bool();
-	grid = data.child("grid").attribute("value").as_bool();
-	gripped = data.child("gripped").attribute("value").as_bool();
-	gravity_active = data.child("gravity_active").attribute("value").as_bool();
-	
+
 	LOG("--- Player Loaded");
 }
 
@@ -133,20 +223,7 @@ void j1Player::CleanUp()
 
 void j1Player::Restart()
 {
-	for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
-	{
-		if (object->data->name == ("Collision"))
-		{
-			for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
-			{
-				if (objectdata->data->name == "StartPosition")
-				{
-					position.x = objectdata->data->x;
-					position.y = objectdata->data->y;
-				}
-			}
-		}
-	}
+
 	dead = false;
 }
 
@@ -157,7 +234,9 @@ void j1Player::ChangeAnimation()
 
 void j1Player::LoadAnimations()
 {
-	
+	this-> idle = App->entitycontroller->info->idle;
+	this-> slide = App->entitycontroller->info->slide;
+	this-> jump = App->entitycontroller->info->jump;
 }
 
 void j1Player::CameraOnPlayer()
