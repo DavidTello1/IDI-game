@@ -35,8 +35,15 @@ bool j1Map::Awake(pugi::xml_node& config)
 
 void j1Map::Draw(float dt)
 {
+	PERF_START(scroll_timer);
 	if (map_loaded == false)
 		return;
+
+	if (scroll_timer.ReadTicks() > 15) {
+		scroll_speed  += 2;
+		scroll_timer.Start();
+
+	}
 
 	scroll += scroll_speed;
 	scroll2 += scroll_speed/2;

@@ -5,6 +5,7 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "j1Module.h"
+#include "j1PerfTimer.h"
 #include "SDL\include\SDL_rect.h"
 
 struct SDL_Texture;
@@ -176,6 +177,7 @@ public:
 	int					scroll;
 	int					scroll2;
 	int					scroll_speed;
+	j1PerfTimer			scroll_timer;
 
 private:
 
