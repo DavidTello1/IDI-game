@@ -12,23 +12,49 @@
 #include "j1EntityController.h"
 #include "j1Entity.h"
 
-Obstacles::Obstacles(entityType Type, bool ground)
+Obstacles::Obstacles(entityType Type, bool Ground, iPoint pos)
 {
 	type = Type;
+	ground = Ground;
+	position = pos;
 
 	if (type == entityType::BOX)
 	{
 		dead = false;
-		idle.PushBack({});
+		idle.PushBack({ 190,0,70,70 });
+		current_animation = &idle;
+
+		size = { 70,70 };
 	}
 	else if (type == entityType::SAW)
 	{
-		idle.PushBack({});
-		idle.PushBack({});
+		if (ground == true)
+		{
+			saw_ground.PushBack({ 50,70,70,35 });
+			saw_ground.PushBack({ 120,70,70,35 });
+			saw_ground.loop = true;
+			saw_ground.speed = 5.0f;
+			current_animation = &saw_ground;
+
+			size = { 70,35 };
+		}
+		else
+		{
+			idle.PushBack({ 50,0,70,70 });
+			idle.PushBack({ 50,0,70,70 });
+			idle.loop = true;
+			idle.speed = 5.0f;
+			current_animation = &idle;
+
+			size = { 70,70 };
+		}
 	}
 	else if (type == entityType::WALL)
 	{
-		idle.PushBack({});
+		idle.PushBack({ 0,0,50,105 });
+		current_animation = &idle;
+
+		size = { 50,105 };
 	}
 }
 
@@ -36,25 +62,34 @@ Obstacles::~Obstacles()
 {
 }
 
-bool Obstacles::Start()
+bool Obstacles::PreUpdate()
 {
-	current_animation = &idle;
-
 	if (ground == true)
 	{
-		position.y = 20;
+		if (type == entityType::WALL)
+		{
+			position.y = App->map->data.height*App->map->data.tile_height - 175;
+		}
+		else if (type == entityType::SAW)
+		{
+			position.y = App->map->data.height*App->map->data.tile_height - 105;
+		}
+		else if (type == entityType::BOX)
+		{
+			position.y = App->map->data.height*App->map->data.tile_height - 140;
+		}
 	}
 	else
 	{
-		position.y = 50;
+		if (type == entityType::WALL)
+		{
+			position.y = App->map->data.height*App->map->data.tile_height - 175 /*-player sliding.h + 15*/;
+		}
+		else
+		{
+			position.y = App->map->data.height*App->map->data.tile_height - 140 /*-player sliding.h + 15*/;
+		}
 	}
-	position.x = App->win->width;
-
-	return true;
-}
-
-bool Obstacles::PreUpdate()
-{
 	return true;
 }
 
@@ -68,9 +103,10 @@ bool Obstacles::Update(float dt)
 
 bool Obstacles::PostUpdate()
 {
-	if (type == entityType::BOX && dead == true	|| position.x < 0)
+	if (type == entityType::BOX && dead == true	|| position.x < -size.x)
 	{
 		App->entitycontroller->DeleteEntity(this);
+		App->scene->num_obstacles--;
 	}
 
 	return true;

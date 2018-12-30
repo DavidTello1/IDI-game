@@ -39,10 +39,10 @@ void j1Map::Draw(float dt)
 	if (map_loaded == false)
 		return;
 
-	if (scroll_timer.ReadTicks() > 15) {
-		scroll_speed  += 2;
+	if (scroll_timer.ReadTicks() > 10) 
+	{
+		scroll_speed++;
 		scroll_timer.Start();
-
 	}
 
 	scroll += scroll_speed;

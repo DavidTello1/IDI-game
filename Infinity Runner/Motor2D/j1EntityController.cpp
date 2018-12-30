@@ -29,34 +29,29 @@ bool j1EntityController::Awake(pugi::xml_node &config)
 
 	want_jump = false;
 	want_slide = false;
-
 	return ret;
 }
 
 bool j1EntityController::Start()
 {
 	bool ret = true;
+	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
 
 	player = App->tex->Load("textures/spritesheet32.png");
 	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
 
-	AddEntity(Entity::entityType::PLAYER, true);
-
+	AddEntity(Entity::entityType::PLAYER, true, { 0,0 });
 	return ret;
 }
 
 bool j1EntityController::PreUpdate()
 {
-	if (App->scene->pause == false)
+	p2List_item<Entity*>* tmp = Entities.start;
+	while (tmp != nullptr)
 	{
-		p2List_item<Entity*>* tmp = Entities.start;
-		while (tmp != nullptr)
-		{
-			tmp->data->PreUpdate();
-			tmp = tmp->next;
-		}
+		tmp->data->PreUpdate();
+		tmp = tmp->next;
 	}
-
 	return true;
 }
 
@@ -69,16 +64,12 @@ bool j1EntityController::Update(float dt)
 		DebugDraw();
 	}
 
-	if (App->scene->pause == false)
+	p2List_item<Entity*>* tmp = Entities.start;
+	while (tmp != nullptr)
 	{
-		p2List_item<Entity*>* tmp = Entities.start;
-		while (tmp != nullptr)
-		{
-			ret = tmp->data->Update(dt);
-			tmp = tmp->next;
-		}
+		ret = tmp->data->Update(dt);
+		tmp = tmp->next;
 	}
-
 	return ret;
 }
 
@@ -86,16 +77,12 @@ bool j1EntityController::PostUpdate()
 {
 	bool ret = true;
 
-	if (App->scene->pause == false)
+	p2List_item<Entity*>* tmp = Entities.start;
+	while (tmp != nullptr)
 	{
-		p2List_item<Entity*>* tmp = Entities.start;
-		while (tmp != nullptr)
-		{
-			tmp->data->PostUpdate();
-			tmp = tmp->next;
-		}
+		tmp->data->PostUpdate();
+		tmp = tmp->next;
 	}
-	
 	return ret;
 }
 
@@ -104,7 +91,6 @@ bool j1EntityController::CleanUp()
 	DeleteEntities();
 	App->tex->UnLoad(texture);
 	App->tex->UnLoad(player);
-
 	return true;
 }
 
@@ -155,13 +141,11 @@ bool j1EntityController::Draw()
 		}
 		tmp = tmp->next;
 	}
+
 	if (tmp2 != nullptr)
 	{
 		tmp2->data->Draw(); //draw player last
 	}
-
-	//comment to stop debugging mode
-	DebugDraw();
 
 	return ret;
 }
@@ -177,30 +161,29 @@ bool j1EntityController::DebugDraw()
 		col.h = tmp->data->Collider.h;
 		col.w = tmp->data->Collider.w;
 		App->render->DrawQuad(col, 0, 0, 255, 50); //blue
-
-		tmp = tmp->next;
 	}
 
 	return true;
 }
 
-Entity* j1EntityController::AddEntity(Entity::entityType type, bool ground)
+Entity* j1EntityController::AddEntity(Entity::entityType type, bool ground, iPoint pos)
 {
 	Entity* tmp = nullptr;
 
 	switch (type)
 	{
 	case Entity::entityType::BOX:
-		tmp = new Obstacles(type, ground);
+		tmp = new Obstacles(type, ground, pos);
 		break;
 
 	case Entity::entityType::WALL:
-		tmp = new Obstacles(type, ground);
+		tmp = new Obstacles(type, ground, pos);
 		break;
 
 	case Entity::entityType::SAW:
-		tmp = new Obstacles(type, ground);
+		tmp = new Obstacles(type, ground, pos);
 		break;
+
 
 	case Entity::entityType::PLAYER:
 		tmp = new j1Player();

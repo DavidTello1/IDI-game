@@ -13,13 +13,12 @@ class Obstacles : public Entity
 {
 public:
 
-	Obstacles(entityType type, bool ground);
+	Obstacles(entityType type, bool ground, iPoint pos);
 
 	// Destructor
 	~Obstacles();
 
 	//Called before the first frame
-	bool Start();
 	bool PreUpdate();
 	bool Update(float dt);
 	bool PostUpdate();
@@ -29,6 +28,7 @@ public:
 
 public:
 	Animation	idle;
+	Animation	saw_ground;
 	bool ground;
 
 };

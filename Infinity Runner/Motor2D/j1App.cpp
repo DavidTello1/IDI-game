@@ -16,7 +16,6 @@
 #include "j1EntityController.h"
 #include "j1Fonts.h"
 #include "j1App.h"
-#include "j1Gui.h"
 
 // Constructor
 j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
@@ -33,7 +32,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	map = new j1Map();
 	entitycontroller = new j1EntityController();
 	font = new j1Fonts();
-	gui = new j1Gui();
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
@@ -46,7 +44,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(entitycontroller);
 	AddModule(scene);
 	AddModule(font);
-	AddModule(gui);
 
 	// render last to swap buffer
 	AddModule(render);

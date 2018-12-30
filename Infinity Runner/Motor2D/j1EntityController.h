@@ -24,7 +24,7 @@ public:
 	bool Draw();
 	bool DebugDraw();
 
-	Entity* AddEntity(Entity::entityType type, bool ground);
+	Entity* AddEntity(Entity::entityType type, bool ground, iPoint pos);
 	bool DeleteEntity(Entity* entity);
 	void DeleteEntities();
 

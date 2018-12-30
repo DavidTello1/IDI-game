@@ -9,8 +9,10 @@
 #include "j1SceneChange.h"
 #include "j1EntityController.h"
 #include "j1Fonts.h"
+#include "j1Entity.h"
 
 #include <stdio.h>
+#include <time.h>
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -39,6 +41,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	}
 
 	controls = WASD;
+	max_obstacles = config.child("max_obstacles").attribute("value").as_uint();
+	spacing = config.child("spacing").attribute("value").as_uint();
 
 	return ret;
 }
@@ -48,6 +52,9 @@ bool j1Scene::Start()
 {
 	App->map->Load(map_names.start->data->GetString());
 
+	last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::WALL, true, { App->win->width, App->win->height });
+	num_obstacles = 1;
+
 	return true;
 }
 
@@ -55,6 +62,30 @@ bool j1Scene::Start()
 bool j1Scene::PreUpdate()
 {
 	ChangeControls();
+
+	if (num_obstacles < max_obstacles)
+	{
+		if (last_obstacle != nullptr && last_obstacle->position.x <= App->win->width - spacing)
+		{
+			srand(time(NULL));
+			int entity = rand() % 3;
+			bool grounded = ((rand() % 10 + 1) % 2 == 0);
+
+			if (entity == 0)
+			{
+				last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::WALL, grounded, { App->win->width, App->win->height });
+			}
+			else if (entity == 1)
+			{
+				last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::BOX, grounded, { App->win->width, App->win->height });
+			}
+			else if (entity == 2)
+			{
+				last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::SAW, grounded, { App->win->width, App->win->height });
+			}
+			num_obstacles++;
+		}
+	}
 	return true;
 }
 
@@ -62,6 +93,7 @@ bool j1Scene::PreUpdate()
 bool j1Scene::Update(float dt)
 {
 	App->map->Draw(dt);
+	App->entitycontroller->Draw();
 
 	return true;
 }
@@ -69,8 +101,10 @@ bool j1Scene::Update(float dt)
 // Called each loop iteration
 bool j1Scene::PostUpdate()
 {
-	App->entitycontroller->Draw();
-
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -82,11 +116,6 @@ bool j1Scene::CleanUp()
 	App->tex->UnLoad(debug_tex);
 	
 	return true;
-}
-
-void j1Scene::SpawnEnemies()
-{
-
 }
 
 void j1Scene::ChangeControls()

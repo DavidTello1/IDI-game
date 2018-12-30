@@ -31,12 +31,7 @@ public:
 
 	SDL_Rect& GetCurrentFrame(float dt = 1.0f)
 	{
-		float tmp = speed;
-
-		if (App->scene->pause == false)
-		{
-			current_frame += tmp*dt;
-		}
+		current_frame += speed*dt;
 
 		if (current_frame < 0)
 		{
