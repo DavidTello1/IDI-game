@@ -4,9 +4,6 @@
   <image source="BG.png" width="1280" height="980"/>
  </tileset>
  <layer name="Background" width="18" height="10">
-  <properties>
-   <property name="parallaxSpeed" type="float" value="0.8"/>
-  </properties>
   <data>
    <tile gid="73"/>
    <tile gid="74"/>
@@ -191,9 +188,6 @@
   </data>
  </layer>
  <layer name="Floor" width="18" height="10">
-  <properties>
-   <property name="parallaxSpeed" type="float" value="1"/>
-  </properties>
   <data>
    <tile gid="0"/>
    <tile gid="0"/>

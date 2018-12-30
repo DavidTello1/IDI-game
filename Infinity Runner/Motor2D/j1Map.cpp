@@ -27,6 +27,7 @@ bool j1Map::Awake(pugi::xml_node& config)
 	folder.create(config.child("folder").child_value());
 
 	scroll = 0;
+	scroll2 = 0;
 	scroll_speed = 4;
 
 	return ret;
@@ -38,9 +39,15 @@ void j1Map::Draw(float dt)
 		return;
 
 	scroll += scroll_speed;
+	scroll2 += scroll_speed/2;
+
 	if (scroll >= data.width*data.tile_width)
 	{
 		scroll = 0;
+	}
+	if (scroll2 >= data.width*data.tile_width)
+	{
+		scroll2 = 0;
 	}
 
 	for (uint lay = 0; lay < data.layers.count(); lay++)
@@ -58,10 +65,25 @@ void j1Map::Draw(float dt)
 						SDL_Rect r = tileset->GetTileRect(tile_id);
 						iPoint pos = MapToWorld(x, y);
 
-						pos.x -= scroll;
-						App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
-						pos.x += data.width*data.tile_width;
-						App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
+						if (data.layers[lay]->name == "Background")
+						{
+							pos.x -= scroll2;
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+							pos.x += data.width*data.tile_width;
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+						}
+						else if (data.layers[lay]->name == "Floor")
+						{
+							pos.x -= scroll;
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+							pos.x += data.width*data.tile_width;
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+						}
+						else if (data.layers[lay]->name == "Sky")
+						{
+							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+						}
+
 					}
 				}
 			}
