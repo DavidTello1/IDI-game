@@ -41,7 +41,8 @@ public:
 
 	void ChangeAnimation();
 	void LoadAnimations();
-	void CameraOnPlayer();
+
+	void Collider_Overlay();
 
 public:
 
@@ -59,9 +60,9 @@ public:
 	bool		start_sliding;
 	bool		sliding;
 	bool		finish_sliding;
-	bool		dead;
 	bool		attack;
 	bool		falling;
+	bool		grounded;
 
 	int gravity;
 	int lives;

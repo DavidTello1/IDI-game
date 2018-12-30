@@ -13,7 +13,7 @@ class Obstacles : public Entity
 {
 public:
 
-	Obstacles(entityType type, iPoint position, iPoint Size);
+	Obstacles(entityType type, bool ground);
 
 	// Destructor
 	~Obstacles();
@@ -27,10 +27,9 @@ public:
 	// Called before quitting
 	void CleanUp();
 
-	void LoadAnimations();
-
 public:
-	Animation	saw_rotating;
+	Animation	idle;
+	bool ground;
 
 };
 #endif // !__OBSTACLES_H__

@@ -33,7 +33,7 @@ bool j1EntityController::Awake(pugi::xml_node &config)
 bool j1EntityController::Start()
 {
 	bool ret = true;
-	//texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
+	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
 	return ret;
 }
 
@@ -169,22 +169,22 @@ bool j1EntityController::DebugDraw()
 	return true;
 }
 
-Entity* j1EntityController::AddEntity(Entity::entityType type, iPoint position, iPoint Size)
+Entity* j1EntityController::AddEntity(Entity::entityType type, bool ground)
 {
 	Entity* tmp = nullptr;
 
 	switch (type)
 	{
 	case Entity::entityType::BOX:
-		tmp = new Obstacles(type, position, Size);
+		tmp = new Obstacles(type, ground);
 		break;
 
 	case Entity::entityType::WALL:
-		tmp = new Obstacles(type, position, Size);
+		tmp = new Obstacles(type, ground);
 		break;
 
 	case Entity::entityType::SAW:
-		tmp = new Obstacles(type, position, Size);
+		tmp = new Obstacles(type, ground);
 		break;
 
 

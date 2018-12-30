@@ -21,48 +21,13 @@ Entity::Entity(entityType type) : type(type)
 {
 }
 
-Entity::Entity(entityType type, iPoint position, iPoint Size) : type(type), position(position), size(Size)
-{
-	if (type == entityType::BOX)
-	{
-	}
-}
-
 Entity::~Entity()
 {
 }
 
 void Entity::Draw()
 {
-	if (flip)
-	{
-		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_HORIZONTAL);
-	}
-	else
-	{
-		App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_NONE);
-	}
-}
-
-void Entity::Collider_Overlay()
-{
-	SDL_Rect result;
-
-	p2List_item<Entity*>* tmp = App->entitycontroller->Entities.start; //grid
-	while(tmp != nullptr)
-	{
-		if (tmp->data->type == Entity::entityType::BOX)
-		{
-			if (SDL_IntersectRect(&Collider, &tmp->data->Collider, &result))
-			{
-				//box_collision = true;
-				//box_position = tmp->data->position;
-				//box_moving = tmp->data->box_moving;
-			}
-		}
-
-		tmp = tmp->next;
-	}
+	App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_NONE);
 }
 
 void Entity::PositionCollider()

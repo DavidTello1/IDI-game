@@ -1,13 +1,10 @@
 #ifndef __j1ENTITY_H__
 #define __j1ENTITY_H__
 
-#include "p2Point.h"
 #include "p2Log.h"
-#include "p2DynArray.h"
 #include "p2Animation.h"
 #include "j1Map.h"
 #include "j1App.h"
-
 
 class Entity
 {
@@ -37,18 +34,17 @@ public:
 	virtual void LoadAnimations() {};
 	virtual void ChangeAnimation() {};
 
-	void Collider_Overlay();
 	void PositionCollider();
 	void Draw();
 
 public:
 	Animation* current_animation = nullptr;
 	entityType type;
-	
 	iPoint position;
 	iPoint size;
 	iPoint speed;
 	SDL_Rect Collider;
+	bool dead;
 };
 
 #endif

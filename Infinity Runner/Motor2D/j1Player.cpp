@@ -17,11 +17,8 @@ j1Player::j1Player() : Entity(entityType::PLAYER)
 	sliding = false;
 	start_sliding = false;
 	falling = false;
-
-	LoadAnimations();
-
-	current_animation = &idle;
-
+	grounded = false;
+	dead = false;
 }
 
 j1Player::~j1Player()
@@ -43,8 +40,6 @@ bool j1Player::Awake(pugi::xml_node & config)
 	speed.x = config.child("speed").attribute("x").as_int();
 	speed.y = config.child("speed").attribute("y").as_int();
 	gravity = config.child("gravity").attribute("value").as_int();
-
-	dead = false;
 
 	return ret;
 }
@@ -128,12 +123,6 @@ bool j1Player::Update(float dt)
 		speed.y += gravity;
 	}
 
-	if (right)
-		dx += speed.x;
-
-	if (left)
-		dx -= speed.x;
-
 	if (jumping)
 	{
 		grounded = false;
@@ -164,38 +153,20 @@ bool j1Player::PostUpdate()
 {
 	PositionCollider();
 
+	if (lives <= 0)
+	{
+		dead = true;
+	}
+
 	if (dead && !App->scenechange->IsChanging())
 	{
-		App->scene->player_lives--;
-		if (App->scene->player_lives > 0)
-		{
-			App->audio->PlayFx(DEAD);
-			App->scenechange->ChangeMap(App->scene->currentMap, App->scene->fade_time);
-		}
-		else
-		{
-			App->scene->delay.Start();
-			App->audio->PlayFx(GAME_OVER);
-		}
+		App->scenechange->ChangeMap(App->scene->currentMap, App->scene->fade_time);
+		App->scene->delay.Start();
+		App->audio->PlayFx(GAME_OVER);
 	}
 
 	return true;
 }
-
-void j1Player::Load(pugi::xml_node& data)
-{
-
-	LOG("--- Player Loaded");
-}
-
-// Save Game State
-void j1Player::Save(pugi::xml_node& data) const
-{
-	pugi::xml_node player = data.append_child("player");
-
-	LOG("---Player Saved");
-}
-
 
 void j1Player::CleanUp()
 {
@@ -205,7 +176,6 @@ void j1Player::CleanUp()
 
 void j1Player::Restart()
 {
-
 	dead = false;
 }
 
@@ -221,25 +191,35 @@ void j1Player::LoadAnimations()
 	this-> jump = App->entitycontroller->info->jump;
 }
 
-void j1Player::CameraOnPlayer()
+void j1Player::Collider_Overlay()
 {
-	App->render->camera.x = -position.x + App->render->camera.w / 3;
-	App->render->camera.y = -position.y + App->render->camera.h / 2;
-
-	if (App->render->camera.x > 0) //left limit
+	p2List_item<Entity*>* tmp = App->entitycontroller->Entities.start;
+	while (tmp != nullptr)
 	{
-		App->render->camera.x = 0;
-	}
-	if (App->render->camera.x - App->render->camera.w < -App->map->data.width * App->map->data.tile_width) //right limit
-	{
-		App->render->camera.x = -App->map->data.width * App->map->data.tile_width + App->render->camera.w;
-	}
-	if (App->render->camera.y > 0) //top limit
-	{
-		App->render->camera.y = 0;
-	}
-	if (App->render->camera.y - App->render->camera.h < -App->map->data.height * App->map->data.tile_height) //down limit
-	{
-		App->render->camera.y = -App->map->data.height * App->map->data.tile_height + App->render->camera.h;
+		if (SDL_HasIntersection(&Collider, &tmp->data->Collider))
+		{
+			if (tmp->data->type == Entity::entityType::BOX)
+			{
+				if (attack == true)
+				{
+					tmp->data->dead = true;
+				}
+				else
+				{
+					lives--;
+					App->audio->PlayFx(DEAD);
+				}
+			}
+			else if (tmp->data->type == Entity::entityType::WALL)
+			{
+				lives--;
+				App->audio->PlayFx(DEAD);
+			}
+			else if (tmp->data->type == Entity::entityType::SAW)
+			{
+				dead = true;
+			}
+		}
+		tmp = tmp->next;
 	}
 }

@@ -1,3 +1,4 @@
+#include "p2Log.h"
 #include "j1App.h"
 #include "Obstacles.h"
 #include "j1Audio.h"
@@ -9,20 +10,27 @@
 #include "j1Scene.h"
 #include "j1SceneChange.h"
 #include "j1EntityController.h"
-#include "p2Log.h"
+#include "j1Entity.h"
 
-Obstacles::Obstacles(entityType type, iPoint position, iPoint Size) : Entity(entityType::BOX)
+Obstacles::Obstacles(entityType Type, bool ground)
 {
-}
+	type = Type;
 
-Obstacles::Obstacles(entityType type, iPoint position, iPoint Size) : Entity(entityType::SAW)
-{
+	if (type == entityType::BOX)
+	{
+		dead = false;
+		idle.PushBack({});
+	}
+	else if (type == entityType::SAW)
+	{
+		idle.PushBack({});
+		idle.PushBack({});
+	}
+	else if (type == entityType::WALL)
+	{
+		idle.PushBack({});
+	}
 }
-
-Obstacles::Obstacles(entityType type, iPoint position, iPoint Size) : Entity(entityType::WALL)
-{
-}
-
 
 Obstacles::~Obstacles()
 {
@@ -30,30 +38,45 @@ Obstacles::~Obstacles()
 
 bool Obstacles::Start()
 {
+	current_animation = &idle;
+
+	if (ground == true)
+	{
+		position.y = 20;
+	}
+	else
+	{
+		position.y = 50;
+	}
+	position.x = App->win->width;
+
 	return true;
 }
 
 bool Obstacles::PreUpdate()
 {
+	return true;
 }
 
 bool Obstacles::Update(float dt)
 {
+	position.x -= App->map->scroll_speed;
+	PositionCollider();
+
 	return true;
 }
 
 bool Obstacles::PostUpdate()
 {
-	PositionCollider();
+	if (type == entityType::BOX && dead == true	|| position.x < 0)
+	{
+		App->entitycontroller->DeleteEntity(this);
+	}
+
 	return true;
 }
 
 void Obstacles::CleanUp()
 {
-	LOG("---Player Deleted");
-
-}
-
-void Obstacles::LoadAnimations()
-{
+	LOG("---Obstacles Deleted");
 }
