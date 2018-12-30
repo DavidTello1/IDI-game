@@ -137,7 +137,19 @@ bool j1Player::PreUpdate()
 	}
 	else if (App->scene->controls == j1Scene::Controls::UI_BUTTONS)
 	{
-		
+		if (App->entitycontroller->want_jump && can_jump)
+		{
+			jumping = true;
+		}
+		if (App->entitycontroller->want_slide && can_slide)
+		{
+			start_sliding = true;
+		}
+		if (App->entitycontroller->want_jump && sliding)
+		{
+			start_sliding = false;
+			finish_sliding = true;
+		}
 	}
 	else if (App->scene->controls == j1Scene::Controls::DRAG_MOUSE)
 	{
