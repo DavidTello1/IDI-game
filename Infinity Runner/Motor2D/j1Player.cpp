@@ -14,8 +14,6 @@
 j1Player::j1Player() : Entity(entityType::PLAYER)
 {
 	jumping = false;
-	right = false;
-	left = false;
 	sliding = false;
 	start_sliding = false;
 	falling = false;
@@ -80,14 +78,6 @@ bool j1Player::PreUpdate()
 {
 	if (controls == WASD)
 	{
-		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		{
-			right = true;
-		}
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		{
-			left = true;
-		}
 		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && !jumping && !falling)
 		{
 			jumping = true;
@@ -103,14 +93,6 @@ bool j1Player::PreUpdate()
 	}
 	else if (controls == ARROWS)
 	{
-		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		{
-			right = true;
-		}
-		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		{
-			left = true;
-		}
 		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && !jumping && !falling)
 		{
 			jumping = true;

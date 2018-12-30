@@ -59,6 +59,7 @@ bool j1Scene::PreUpdate()
 bool j1Scene::Update(float dt)
 {
 	App->map->Draw(dt);
+	App->entitycontroller->Draw(dt);
 
 	return true;
 }

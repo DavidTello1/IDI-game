@@ -6,6 +6,7 @@
 #include "j1SceneChange.h"
 #include "j1Entity.h"
 #include "j1Player.h"
+#include "Obstacles.h"
 #include "j1Textures.h"
 
 #include "PugiXml/src/pugixml.hpp"
@@ -175,8 +176,17 @@ Entity* j1EntityController::AddEntity(Entity::entityType type, iPoint position, 
 	switch (type)
 	{
 	case Entity::entityType::BOX:
-		tmp = new Entity(type, position, Size);
+		tmp = new Obstacles(type, position, Size);
 		break;
+
+	case Entity::entityType::WALL:
+		tmp = new Obstacles(type, position, Size);
+		break;
+
+	case Entity::entityType::SAW:
+		tmp = new Obstacles(type, position, Size);
+		break;
+
 
 	case Entity::entityType::PLAYER:
 		tmp = new j1Player();

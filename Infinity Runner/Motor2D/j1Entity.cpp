@@ -23,6 +23,9 @@ Entity::Entity(entityType type) : type(type)
 
 Entity::Entity(entityType type, iPoint position, iPoint Size) : type(type), position(position), size(Size)
 {
+	if (type == entityType::BOX)
+	{
+	}
 }
 
 Entity::~Entity()

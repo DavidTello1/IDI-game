@@ -24,7 +24,6 @@ public:
 public:
 	Entity();
 	Entity(entityType type);
-	Entity(entityType type, iPoint position, iPoint Size);
 	~Entity();
 
 	virtual bool Awake(pugi::xml_node & config) { return true; };
@@ -49,18 +48,7 @@ public:
 	iPoint position;
 	iPoint size;
 	iPoint speed;
-	int gravity;
-	int lives;
-	int jumpSpeed;
-
 	SDL_Rect Collider;
-	
-	bool flip = false;
-	bool dead = false;
-	bool grounded = false;
-	bool jumping = false;
-	bool sliding = false;
-	bool attack = false;
 };
 
 #endif

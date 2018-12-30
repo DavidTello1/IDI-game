@@ -55,13 +55,17 @@ public:
 	int			dx;
 	int			dy;
 
-	bool		right;
-	bool		left;
 	bool		jumping;
 	bool		start_sliding;
 	bool		sliding;
 	bool		finish_sliding;
+	bool		dead;
+	bool		attack;
 	bool		falling;
+
+	int gravity;
+	int lives;
+	int jumpSpeed;
 
 
 	enum Controls
