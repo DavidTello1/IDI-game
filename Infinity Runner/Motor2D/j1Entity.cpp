@@ -43,7 +43,6 @@ void Entity::Draw()
 
 void Entity::Collider_Overlay()
 {
-	SDL_Rect ObjectRect;
 	SDL_Rect result;
 
 	p2List_item<Entity*>* tmp = App->entitycontroller->Entities.start; //grid

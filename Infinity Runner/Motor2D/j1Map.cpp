@@ -26,6 +26,9 @@ bool j1Map::Awake(pugi::xml_node& config)
 
 	folder.create(config.child("folder").child_value());
 
+	scroll = 0;
+	scroll_speed = 4;
+
 	return ret;
 }
 
@@ -33,6 +36,12 @@ void j1Map::Draw(float dt)
 {
 	if (map_loaded == false)
 		return;
+
+	scroll += scroll_speed;
+	if (scroll >= data.width*data.tile_width)
+	{
+		scroll = 0;
+	}
 
 	for (uint lay = 0; lay < data.layers.count(); lay++)
 	{
@@ -49,20 +58,10 @@ void j1Map::Draw(float dt)
 						SDL_Rect r = tileset->GetTileRect(tile_id);
 						iPoint pos = MapToWorld(x, y);
 
-						if (data.layers[lay]->name == "Background")
-						{
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
-						}
-
-						else if (data.layers[lay]->name == "Floor")
-						{
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed*2);
-						}
-
-						else
-						{
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-						}
+						pos.x -= scroll;
+						App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
+						pos.x += data.width*data.tile_width;
+						App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE, data.layers[lay]->parallaxSpeed);
 					}
 				}
 			}
@@ -349,7 +348,7 @@ bool j1Map::Load(const char* file_name)
 
 	map_loaded = ret;
 
-	return map_loaded;
+	return ret;
 }
 
 // Load map general properties
@@ -455,7 +454,7 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 	}
 	else
 	{
-		set->texture = App->tex->Load(image.attribute("source").as_string());
+		set->texture = App->tex->Load(PATH(folder.GetString(), image.attribute("source").as_string()));
 		int w, h;
 		SDL_QueryTexture(set->texture, NULL, NULL, &w, &h);
 		set->tex_width = image.attribute("width").as_int();

@@ -44,7 +44,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load("maps/level.tmx");
+	App->map->Load(map_names.start->data->GetString());
 
 	return true;
 }

@@ -173,6 +173,8 @@ public:
 
 	MapData				data;
 	bool				debug = false;
+	int					scroll;
+	int					scroll_speed;
 
 private:
 

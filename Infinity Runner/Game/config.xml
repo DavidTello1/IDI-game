@@ -84,15 +84,8 @@
   </entitycontroller>
 
   <scene>
-    <map_name name="level1.tmx"></map_name>
-    <map_name name="level2.tmx"></map_name>
+    <map_name name="level.tmx"></map_name>
     <fade_time value="1"/>
   </scene>
-
-  <main_menu>
-    <menu_bg file="gui/title_bg.png"/>
-    <credits file="gui/credits.png"/>
-    <music vol="40" sfx="100"/>
-  </main_menu>
-
+  
   </config>

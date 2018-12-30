@@ -81,8 +81,9 @@ bool j1App::Awake()
 	pugi::xml_node		config;
 	pugi::xml_node		app_config;
 
-	bool ret = true;
+	bool ret = false;
 
+	config = LoadConfig(config_file);
 	save_game =  "save_game.xml";
 
 	if(config.empty() == false)
@@ -164,6 +165,20 @@ bool j1App::Update()
 		ret = PostUpdate();
 
 	FinishUpdate();
+	return ret;
+}
+
+// ---------------------------------------------
+pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
+{
+	pugi::xml_node ret;
+	pugi::xml_parse_result result = config_file.load_file("config.xml");
+
+	if (result == NULL)
+		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
+	else
+		ret = config_file.child("config");
+
 	return ret;
 }
 

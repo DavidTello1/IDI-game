@@ -49,6 +49,7 @@ public:
 	const char* GetArgv(int index) const;
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
+	pugi::xml_node LoadConfig(pugi::xml_document&) const;
 
 	// Save
 	bool SavegameNow() const;
