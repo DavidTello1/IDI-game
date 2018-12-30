@@ -48,6 +48,16 @@ public:
 
 		return(r);
 	}
+	// Negate values
+	p2Point operator -() const
+	{
+		p2Point r;
+
+		r.x = -x;
+		r.y = -y;
+
+		return(r);
+	}
 
 	p2Point operator + (const p2Point &v) const
 	{
@@ -55,6 +65,24 @@ public:
 
 		r.x = x + v.x;
 		r.y = y + v.y;
+
+		return(r);
+	}
+	p2Point operator + (const TYPE &v) const
+	{
+		p2Point r;
+
+		r.x = x + v;
+		r.y = y + v;
+
+		return(r);
+	}
+	p2Point operator * (const p2Point &v) const
+	{
+		p2Point r;
+
+		r.x = x * v.x;
+		r.y = y * v.y;
 
 		return(r);
 	}
@@ -74,17 +102,52 @@ public:
 
 		return(*this);
 	}
+	const p2Point& operator *=(const TYPE &v)
+	{
+		x *= v;
+		y *= v;
+
+		return(*this);
+	}
+	p2Point operator *(const TYPE &v)
+	{
+		p2Point r;
+
+		r.x = x *v;
+		r.y = y *v;
+
+		return(r);
+	}
 
 	bool operator ==(const p2Point& v) const
 	{
 		return (x == v.x && y == v.y);
+	}
+	bool operator ==(const int& v) const
+	{
+		return (x == v && y == v);
 	}
 
 	bool operator !=(const p2Point& v) const
 	{
 		return (x != v.x || y != v.y);
 	}
-
+	bool operator >=(const int& v) const
+	{
+		return (x >= v && y >= v);
+	}
+	bool operator <=(const int& v) const
+	{
+		return (x <= v && y <= v);
+	}
+	bool operator >(const int& v) const
+	{
+		return (x > v && y > v);
+	}
+	bool operator <(const int& v) const
+	{
+		return (x < v && y < v);
+	}
 	// Utils ------------------------------------------------
 	bool IsZero() const
 	{
@@ -111,7 +174,7 @@ public:
 		TYPE fx = x - v.x;
 		TYPE fy = y - v.y;
 
-		return sqrtf((fx*fx) + (fy*fy));
+		return (TYPE)(sqrtf((fx*fx) + (fy*fy)));
 	}
 
 	TYPE DistanceNoSqrt(const p2Point& v) const

@@ -17,8 +17,38 @@ j1Player::j1Player() : Entity(entityType::PLAYER)
 	sliding = false;
 	start_sliding = false;
 	falling = false;
-	grounded = false;
+	grounded = true;
 	dead = false;
+	is_jump = false;
+
+	lives = 3;
+	speed.y = 0;
+	gravity = 2;
+
+	jumpSpeed = 20;
+	
+	idle.PushBack({ 0,0,32,32 });
+	jump.PushBack({ 64,0,32,32 });
+	fall.PushBack({ 96,0,32,32 });
+	start_slide.PushBack({ 32,0,32,16 });
+	slide.PushBack({ 32,0,32,16 });
+	finish_slide.PushBack({ 32,0,32,16 });
+
+	//LoadAnimations();
+	current_animation = &idle;
+	current_animation->speed = 0.5f;
+
+	Collider.x = position.x;
+	Collider.y = position.y;
+	Collider.w = current_animation->GetCurrentFrame().w;
+	Collider.h = current_animation->GetCurrentFrame().h;
+
+	floor = App->render->viewport.h - 70;
+
+	position.x = 100;
+	position.y = floor;
+
+	LOG("player created");
 }
 
 j1Player::~j1Player()
@@ -71,50 +101,53 @@ bool j1Player::Start()
 
 bool j1Player::PreUpdate()
 {
-	if (controls == WASD)
+	bool can_jump = (!jumping && !falling && !sliding && !finish_sliding && !start_sliding && grounded);
+	bool can_slide = (!jumping && !falling && grounded && !finish_sliding);
+
+	if (App->scene->controls == j1Scene::Controls::WASD)
 	{
-		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && !jumping && !falling)
+		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && can_jump)
 		{
 			jumping = true;
 		}
-		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+		if ((App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) && can_slide)
 		{
-			sliding = true;
+			start_sliding = true;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP && sliding)
 		{
 			finish_sliding = true;
 		}
 	}
-	else if (controls == ARROWS)
+	else if (App->scene->controls == j1Scene::Controls::ARROWS)
 	{
-		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && !jumping && !falling)
+		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && can_jump)
 		{
 			jumping = true;
 		}
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+		if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) && can_slide)
 		{
 			start_sliding = true;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP && sliding)
 		{
+			start_sliding = false;
 			finish_sliding = true;
 		}
 	}
-	else if (controls == UI_BUTTONS)
+	else if (App->scene->controls == j1Scene::Controls::UI_BUTTONS)
 	{
-		//...
+		
 	}
-	else if (controls == DRAG_MOUSE)
+	else if (App->scene->controls == j1Scene::Controls::DRAG_MOUSE)
 	{
-		//...
+		
 	}
 	return true;
 }
 
 bool j1Player::Update(float dt)
 {
-	dx = 0;
 	dy = 0;
 
 	//gravity acting first
@@ -126,31 +159,41 @@ bool j1Player::Update(float dt)
 	if (jumping)
 	{
 		grounded = false;
-		speed.y = jumpSpeed;
-		dy -= speed.y;
-		if (position.y <= top_pos)
-		{
-			jumping = false;
-			falling = true;
-		}
+		jumping = false;
+		is_jump = true;
+		LOG("JUMP---------------------------------------------------------------");
+		speed.y = -jumpSpeed;
+	}
+
+	if (speed.y > 0)
+	{
+		falling = true;
+		is_jump = false;
+		LOG("falling");
 	}
 
 	if (start_sliding)
 	{
-		speed.y -= gravity;
-		if (position.y <= slide_pos)
-		{
-			start_sliding = false;
-			sliding = true;
-		}
+		speed.y += gravity;
 	}
 
+	if (finish_sliding)
+	{
+		sliding = false;
+		position.y = floor - idle.GetCurrentFrame().h;
+	}
+
+	ChangeAnimation();
+	dy += speed.y;
 	
 	return true;
 }
 
 bool j1Player::PostUpdate()
 {
+	position.y += dy;
+
+	PlayerOnFloor();
 	PositionCollider();
 
 	if (lives <= 0)
@@ -158,20 +201,22 @@ bool j1Player::PostUpdate()
 		dead = true;
 	}
 
-	if (dead && !App->scenechange->IsChanging())
-	{
-		App->scenechange->ChangeMap(App->scene->currentMap, App->scene->fade_time);
-		App->scene->delay.Start();
-		App->audio->PlayFx(GAME_OVER);
-	}
+
+
+	//if (dead && !App->scenechange->IsChanging())
+	//{
+	//	App->scenechange->ChangeMap(App->scene->currentMap, App->scene->fade_time);
+	//	App->scene->delay.Start();
+	//	App->audio->PlayFx(GAME_OVER);
+	//}
 
 	return true;
 }
 
 void j1Player::CleanUp()
 {
-	LOG("---Player Deleted");
 
+	LOG("---Player Deleted");
 }
 
 void j1Player::Restart()
@@ -181,14 +226,68 @@ void j1Player::Restart()
 
 void j1Player::ChangeAnimation()
 {
+	if (!dead)
+	{
+		current_animation = &idle;
 
+		if (is_jump)
+		{
+			current_animation = &jump;
+			LOG("current anim: JUMP-----------------");
+		}
+
+		if (falling)
+			current_animation = &fall;
+
+		if (start_sliding)
+		{
+			current_animation = &start_slide;
+			LOG("start sliding-----------------------------------------------------------");
+			if (current_animation->Finished())
+			{
+				current_animation = &slide;
+				sliding = true;
+			}
+		}
+
+		if (sliding)
+			current_animation = &slide;
+
+		if (finish_sliding)
+		{
+			current_animation = &finish_slide;
+			if (current_animation->Finished())
+			{
+			LOG("finish sliding------------------------------------------------------------");
+				current_animation = &idle;
+				finish_sliding = false;
+				sliding = false;
+			}
+		}		
+	}
 }
 
 void j1Player::LoadAnimations()
 {
-	this-> idle = App->entitycontroller->info->idle;
-	this-> slide = App->entitycontroller->info->slide;
-	this-> jump = App->entitycontroller->info->jump;
+	this->idle = App->entitycontroller->info->idle;
+	this->start_slide = App->entitycontroller->info->start_slide;
+	this->slide = App->entitycontroller->info->slide;
+	this->start_slide = App->entitycontroller->info->finish_slide;
+	this->jump = App->entitycontroller->info->jump;
+}
+
+void j1Player::PlayerOnFloor()
+{
+	if (!grounded)
+		LOG("-------------------------------------------------------------------00");
+	if (position.y + Collider.h >= floor)
+	{
+		position.y = floor - Collider.h;
+		speed.y = 0;
+		falling = false;
+		grounded = true;
+		LOG("grounded---------------------------------------------------------");
+	}
 }
 
 void j1Player::Collider_Overlay()
@@ -218,6 +317,7 @@ void j1Player::Collider_Overlay()
 			else if (tmp->data->type == Entity::entityType::SAW)
 			{
 				dead = true;
+				App->audio->PlayFx(DEAD);
 			}
 		}
 		tmp = tmp->next;

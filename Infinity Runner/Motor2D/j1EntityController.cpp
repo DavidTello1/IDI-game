@@ -27,13 +27,21 @@ bool j1EntityController::Awake(pugi::xml_node &config)
 	folder.create(config.child("folder").child_value());
 	texture_path = config.child("sprite_sheet").attribute("source").as_string();
 
+	want_jump = false;
+	want_slide = false;
+
 	return ret;
 }
 
 bool j1EntityController::Start()
 {
 	bool ret = true;
+
+	player = App->tex->Load("textures/spritesheet32.png");
 	texture = App->tex->Load(PATH(folder.GetString(), texture_path.GetString()));
+
+	AddEntity(Entity::entityType::PLAYER, true);
+
 	return ret;
 }
 
@@ -95,6 +103,8 @@ bool j1EntityController::CleanUp()
 {
 	DeleteEntities();
 	App->tex->UnLoad(texture);
+	App->tex->UnLoad(player);
+
 	return true;
 }
 
@@ -127,7 +137,7 @@ void j1EntityController::DeleteEntities()
 	Entities.clear();
 }
 
-bool j1EntityController::Draw(float dt)
+bool j1EntityController::Draw()
 {
 	bool ret = true;
 	p2List_item<Entity*>* tmp = Entities.start;
@@ -150,6 +160,9 @@ bool j1EntityController::Draw(float dt)
 		tmp2->data->Draw(); //draw player last
 	}
 
+	//comment to stop debugging mode
+	DebugDraw();
+
 	return ret;
 }
 
@@ -164,6 +177,8 @@ bool j1EntityController::DebugDraw()
 		col.h = tmp->data->Collider.h;
 		col.w = tmp->data->Collider.w;
 		App->render->DrawQuad(col, 0, 0, 255, 50); //blue
+
+		tmp = tmp->next;
 	}
 
 	return true;
@@ -186,7 +201,6 @@ Entity* j1EntityController::AddEntity(Entity::entityType type, bool ground)
 	case Entity::entityType::SAW:
 		tmp = new Obstacles(type, ground);
 		break;
-
 
 	case Entity::entityType::PLAYER:
 		tmp = new j1Player();

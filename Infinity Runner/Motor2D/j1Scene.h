@@ -34,6 +34,7 @@ public:
 	bool CleanUp();
 
 	void SpawnEnemies();
+	void ChangeControls();
 
 	//void UpdateState(UI_Element* data);
 	//void UpdateSimpleUI();
@@ -72,6 +73,14 @@ public:
 
 	j1Timer timer;
 	j1Timer delay;
+
+	enum Controls
+	{
+		WASD,
+		ARROWS,
+		UI_BUTTONS,
+		DRAG_MOUSE
+	}controls;
 };
 
 #endif // __j1SCENE_H__

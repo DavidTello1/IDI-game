@@ -38,6 +38,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 		map_names.add(data);
 	}
 
+	controls = WASD;
+
 	return ret;
 }
 
@@ -52,6 +54,7 @@ bool j1Scene::Start()
 // Called each loop iteration
 bool j1Scene::PreUpdate()
 {
+	ChangeControls();
 	return true;
 }
 
@@ -59,7 +62,6 @@ bool j1Scene::PreUpdate()
 bool j1Scene::Update(float dt)
 {
 	App->map->Draw(dt);
-	App->entitycontroller->Draw(dt);
 
 	return true;
 }
@@ -67,7 +69,8 @@ bool j1Scene::Update(float dt)
 // Called each loop iteration
 bool j1Scene::PostUpdate()
 {
-	
+	App->entitycontroller->Draw();
+
 	return true;
 }
 
@@ -84,6 +87,26 @@ bool j1Scene::CleanUp()
 void j1Scene::SpawnEnemies()
 {
 
+}
+
+void j1Scene::ChangeControls()
+{
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		controls = WASD;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		controls = ARROWS;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		controls = DRAG_MOUSE;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN)
+	{
+		controls = UI_BUTTONS;
+	}
 }
 
 //void j1Scene::UpdateState(UI_Element* data)

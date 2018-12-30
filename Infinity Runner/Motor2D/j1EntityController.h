@@ -21,7 +21,7 @@ public:
 	bool PostUpdate();
 	bool CleanUp();
 	bool Restart();
-	bool Draw(float dt);
+	bool Draw();
 	bool DebugDraw();
 
 	Entity* AddEntity(Entity::entityType type, bool ground);
@@ -32,11 +32,15 @@ public:
 	p2SString		folder;
 	p2SString		texture_path;
 	SDL_Texture*	texture;
+	SDL_Texture*	player;
 	p2List<Entity*> Entities;
 
 	j1Player*		info;
 
 	bool godmode = false;
+
+	bool want_jump;
+	bool want_slide;
 };
 
 #endif //

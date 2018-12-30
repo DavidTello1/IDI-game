@@ -24,14 +24,10 @@ public:
 	//Called before the first frame
 	bool Start();
 
+	//Called each loop iteration
 	bool PreUpdate();
 	bool Update(float dt);
 	bool PostUpdate();
-
-	// Called each loop iteration
-
-	void Load(pugi::xml_node& file);
-	void Save(pugi::xml_node& file) const;
 
 	// Called before quitting
 	void CleanUp();
@@ -41,6 +37,7 @@ public:
 
 	void ChangeAnimation();
 	void LoadAnimations();
+	void PlayerOnFloor();
 
 	void Collider_Overlay();
 
@@ -48,10 +45,12 @@ public:
 
 	Animation	idle;
 	Animation	jump;
+	Animation	fall;
+	Animation	start_slide;
 	Animation	slide;
+	Animation	finish_slide;
 
-	int			slide_pos;
-	int			top_pos;
+	int			floor;
 
 	int			dx;
 	int			dy;
@@ -64,17 +63,12 @@ public:
 	bool		falling;
 	bool		grounded;
 
+	bool		is_jump;
+	bool		is_fall;
+
 	int gravity;
 	int lives;
 	int jumpSpeed;
 
-
-	enum Controls
-	{
-		WASD,
-		ARROWS,
-		UI_BUTTONS,
-		DRAG_MOUSE
-	}controls;
 };
 #endif // !__J1PLAYER_H__

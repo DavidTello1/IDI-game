@@ -50,6 +50,7 @@ bool j1Render::Awake(pugi::xml_node& config)
 		camera.y = 0;
 	}
 
+	SDL_RenderGetViewport(renderer, &viewport);
 	return ret;
 }
 
@@ -59,7 +60,6 @@ bool j1Render::Start()
 	LOG("render start");
 	// back background
 	SDL_RenderSetLogicalSize(renderer, App->win->width, App->win->height);
-	SDL_RenderGetViewport(renderer, &viewport);
 	return true;
 }
 

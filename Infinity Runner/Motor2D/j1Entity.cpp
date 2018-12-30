@@ -27,7 +27,7 @@ Entity::~Entity()
 
 void Entity::Draw()
 {
-	App->render->Blit(App->entitycontroller->texture, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_NONE);
+	App->render->Blit(App->entitycontroller->player, position.x, position.y, &(current_animation->GetCurrentFrame()), SDL_FLIP_NONE);
 }
 
 void Entity::PositionCollider()
