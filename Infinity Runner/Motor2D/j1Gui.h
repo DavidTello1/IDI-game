@@ -6,7 +6,7 @@
 #include "Button.h"
 #include "Label.h"
 #include "j1App.h"
-#include "j1EntityManager.h"
+#include "j1EntityController.h"
 
 
 class j1Gui : public j1Module

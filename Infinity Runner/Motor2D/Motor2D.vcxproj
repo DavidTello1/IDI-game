@@ -102,7 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Kikime\KIKIME\Motor2D\Image.h" />
-    <ClInclude Include="..\..\..\Kikime\KIKIME\Motor2D\UIElement.h" />
+    <ClInclude Include="..\..\..\Kikime\KIKIME\Motor2D\UIElement.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Button.h" />
     <ClInclude Include="j1Entity.h" />
     <ClInclude Include="j1EntityController.h" />

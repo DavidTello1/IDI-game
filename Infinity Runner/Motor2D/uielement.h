@@ -91,7 +91,7 @@ public:
 
 	virtual void Draw(SDL_Texture* sprites = nullptr)
 	{
-		App->render->Blit(sprites, position.x, position.y, &rect[state], 0);
+		App->render->Blit(sprites, position.x, position.y, &rect[state]);
 	}
 
 	int CenterX(int offset = 0) {

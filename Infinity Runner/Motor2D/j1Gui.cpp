@@ -30,7 +30,7 @@ bool j1Gui::Awake(pugi::xml_node& conf)
 	green_file_name = conf.child("green").attribute("file").as_string();
 	yellow_file_name = conf.child("yellow").attribute("file").as_string();
 	grey_file_name = conf.child("grey").attribute("file").as_string();
-
+	
 	moving_speed = conf.attribute("moving_elements_speed").as_int();
 
 	white.r = conf.child("atlas").child("white").attribute("r").as_uint();
