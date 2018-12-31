@@ -87,7 +87,6 @@
     <ClCompile Include="j1PerfTimer.cpp" />
     <ClCompile Include="j1Player.cpp" />
     <ClCompile Include="j1Scene.cpp" />
-    <ClCompile Include="j1SceneChange.cpp" />
     <ClCompile Include="j1Timer.cpp" />
     <ClCompile Include="Obstacles.cpp" />
     <ClCompile Include="p2Log.cpp" />
@@ -104,7 +103,6 @@
     <ClInclude Include="j1PerfTimer.h" />
     <ClInclude Include="j1Player.h" />
     <ClInclude Include="j1Scene.h" />
-    <ClInclude Include="j1SceneChange.h" />
     <ClInclude Include="j1Timer.h" />
     <ClInclude Include="Obstacles.h" />
     <ClInclude Include="p2Animation.h" />

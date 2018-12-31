@@ -29,7 +29,6 @@ public:
 public:
 	Animation	idle;
 	Animation	saw_ground;
-	bool ground;
 
 };
 #endif // !__OBSTACLES_H__

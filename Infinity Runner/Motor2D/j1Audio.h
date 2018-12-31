@@ -10,12 +10,11 @@ struct Mix_Chunk;
 
 enum FX
 {
-	WIN = 1,
+	CLICK = 1,
 	DEAD,
 	GAME_OVER,
-	COIN,
-	CLICK,
-	LOCKED
+	JUMP,
+	SLIDE
 };
 
 class j1Audio : public j1Module

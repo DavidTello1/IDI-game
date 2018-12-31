@@ -20,9 +20,7 @@ public:
 	bool Update(float dt);
 	bool PostUpdate();
 	bool CleanUp();
-	bool Restart();
 	bool Draw();
-	bool DebugDraw();
 
 	Entity* AddEntity(Entity::entityType type, bool ground, iPoint pos);
 	bool DeleteEntity(Entity* entity);
@@ -36,8 +34,6 @@ public:
 	p2List<Entity*> Entities;
 
 	j1Player*		info;
-
-	bool godmode = false;
 
 	bool want_jump;
 	bool want_slide;

@@ -15,7 +15,6 @@ class j1Textures;
 class j1Audio;
 class j1Scene;
 class j1Map;
-class j1SceneChange;
 class j1EntityController;
 class j1Fonts;
 
@@ -81,7 +80,6 @@ public:
 	j1Audio*			audio = NULL;
 	j1Scene*			scene = NULL;
 	j1Map*				map = NULL;
-	j1SceneChange*		scenechange = NULL;
 	j1EntityController* entitycontroller = NULL;
 	j1Fonts*			font = NULL;
 

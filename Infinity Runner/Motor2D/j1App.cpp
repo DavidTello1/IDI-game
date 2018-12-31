@@ -11,7 +11,6 @@
 #include "j1Textures.h"
 #include "j1Audio.h"
 #include "j1Scene.h"
-#include "j1SceneChange.h"
 #include "j1Map.h"
 #include "j1EntityController.h"
 #include "j1Fonts.h"
@@ -28,7 +27,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new j1Textures();
 	audio = new j1Audio();
 	scene = new j1Scene();
-	scenechange = new j1SceneChange();
 	map = new j1Map();
 	entitycontroller = new j1EntityController();
 	font = new j1Fonts();
@@ -40,7 +38,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(tex);
 	AddModule(audio);
 	AddModule(map);
-	AddModule(scenechange);
 	AddModule(entitycontroller);
 	AddModule(scene);
 	AddModule(font);
@@ -84,7 +81,7 @@ bool j1App::Awake()
 	bool ret = false;
 
 	config = LoadConfig(config_file);
-	save_game =  "save_game.xml";
+	save_game =  "save_game_0.xml";
 
 	if(config.empty() == false)
 	{
@@ -339,6 +336,35 @@ const char* j1App::GetOrganization() const
 bool j1App::SavegameNow() const
 {
 	bool ret = true;
-	//save
+	
+	pugi::xml_document data;
+	pugi::xml_node root;
+
+	pugi::xml_document save_data;
+	pugi::xml_parse_result result = save_data.load_file(save_game.GetString());
+
+	if (result)
+	{
+		int i = 0;
+		for(pugi::xml_document save; pugi::xml_parse_result result2 = save.load_file(save_game.GetString()); ++i)
+		{
+			sprintf_s(App->scene->save_file, "save_game_%u.xml", i);
+			save_game = App->scene->save_file;
+		}
+	}
+	else
+	{
+		App->scene->num_saves = 0;
+	}
+
+	root = data.append_child("Automatic_Variables_Saved");
+	root.append_child("controls_used").append_attribute("type") = App->scene->controls_type;
+	root.append_child("score").append_attribute("value") = App->scene->score;
+	root.append_child("boxes_killed").append_attribute("value") = App->scene->boxes_killed;
+	root.append_child("total_boxes").append_attribute("value") = App->scene->num_boxes;
+	root.append_child("obstacle_dies").append_attribute("type") = App->scene->obstacle_type;
+	root.child("obstacle_dies").append_attribute("ground") = App->scene->obstacle_dies->ground;
+
+	data.save_file(save_game.GetString());
 	return ret;
 }

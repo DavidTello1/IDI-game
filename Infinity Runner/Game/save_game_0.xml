@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Automatic_Variables_Saved>
+	<controls_used type="WS / D" />
+	<score value="0" />
+	<boxes_killed value="0" />
+	<total_boxes value="0" />
+	<obstacle_dies type="WALL" ground="true" />
+</Automatic_Variables_Saved>

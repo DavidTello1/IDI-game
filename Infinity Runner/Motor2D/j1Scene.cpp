@@ -6,10 +6,10 @@
 #include "j1Window.h"
 #include "j1Map.h"
 #include "j1Scene.h"
-#include "j1SceneChange.h"
 #include "j1EntityController.h"
 #include "j1Fonts.h"
 #include "j1Entity.h"
+#include "j1Audio.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -30,8 +30,6 @@ bool j1Scene::Awake(pugi::xml_node& config)
 
 	LOG("Loading Scene");
 
-	fade_time = config.child("fade_time").attribute("value").as_float();
-
 	for (pugi::xml_node map = config.child("map_name"); map; map = map.next_sibling("map_name"))
 	{
 		p2SString* data = new p2SString;
@@ -43,17 +41,22 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	controls = WASD;
 	max_obstacles = config.child("max_obstacles").attribute("value").as_uint();
 	spacing = config.child("spacing").attribute("value").as_uint();
-
+	pause = false;
+	player_dead = false;
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene::Start()
 {
+	game_over_tex = App->tex->Load("textures/game_over.png");
 	App->map->Load(map_names.start->data->GetString());
 
+	App->entitycontroller->AddEntity(Entity::entityType::PLAYER, true, { 0,0 });
 	last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::WALL, true, { App->win->width, App->win->height });
 	num_obstacles = 1;
+	num_boxes = 0;
+	score = 0;
 
 	return true;
 }
@@ -92,9 +95,19 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	App->map->Draw(dt);
+	App->map->Draw();
 	App->entitycontroller->Draw();
 
+	if (pause)
+	{
+		App->render->Blit(game_over_tex, App->win->width / 2 - 313, App->win->height / 2 - 250);
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		{
+			player_dead = false;
+			pause = false;
+			App->scene->Restart();
+		}
+	}
 	return true;
 }
 
@@ -105,16 +118,51 @@ bool j1Scene::PostUpdate()
 	{
 		return false;
 	}
+
+	if (!pause)
+	{
+		if (player_dead)
+		{
+			pause = true;
+			App->audio->PlayFx(GAME_OVER);
+
+			if (obstacle_dies->type == 1) { obstacle_type = "WALL"; }
+			else if (obstacle_dies->type == 2) { obstacle_type = "BOX"; }
+			else if (obstacle_dies->type == 3) { obstacle_type = "SAW"; }
+
+			App->SavegameNow();
+		}
+	}
+
+	//score
+	App->tex->UnLoad(score_tex);
+	sprintf_s(current_score, "SCORE: %u", score);
+	score_tex = App->font->Print(current_score, { 0,0,0,255 });
+	App->font->CalcSize(current_score, score_size.x, score_size.y);
+	App->render->Blit(score_tex, App->win->width / 2 - score_size.x / 2, 20);
+
+	//controls
+	App->tex->UnLoad(controls_tex);
+	if (controls == 0) { controls_type = "WS / D"; }
+	else if (controls == 1) { controls_type = "Arrows / Space"; }
+	else if (controls == 2) { controls_type = "Mouse Click / Right Click"; }
+	else if (controls == 3) { controls_type = "Mouse Drag / Right Click"; }
+	sprintf_s(current_controls, "CONTROLS: %s", controls_type);
+	controls_tex = App->font->Print(current_controls, { 0,0,0,255 });
+	App->font->CalcSize(current_controls, controls_size.x, controls_size.y);
+	App->render->Blit(controls_tex, 25, 20);
+
 	return true;
 }
 
 // Called before quitting
 bool j1Scene::CleanUp()
 {
-	LOG("Freeing scene");
+	LOG("Freeing scene");	
+	App->tex->UnLoad(score_tex);
+	App->tex->UnLoad(controls_tex);
+	App->tex->UnLoad(game_over_tex);
 
-	App->tex->UnLoad(debug_tex);
-	
 	return true;
 }
 
@@ -123,19 +171,34 @@ void j1Scene::ChangeControls()
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		controls = WASD;
+		App->audio->PlayFx(CLICK);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 	{
 		controls = ARROWS;
+		App->audio->PlayFx(CLICK);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
 	{
-		controls = DRAG_MOUSE;
+		controls = UI_BUTTONS;
+		App->audio->PlayFx(CLICK);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN)
 	{
-		controls = UI_BUTTONS;
+		controls = DRAG_MOUSE;
+		App->audio->PlayFx(CLICK);
 	}
+}
+
+void j1Scene::Restart()
+{
+	App->tex->UnLoad(game_over_tex);
+	App->entitycontroller->DeleteEntities();
+	App->map->CleanUp();
+	App->map->scroll = 0;
+	App->map->scroll2 = 0;
+	App->scene->spacing = 265;
+	Start();
 }
 
 //void j1Scene::UpdateState(UI_Element* data)

@@ -28,111 +28,78 @@ bool j1Map::Awake(pugi::xml_node& config)
 
 	scroll = 0;
 	scroll2 = 0;
-	scroll_speed = 4;
+	scroll_speed = 8;
 
 	return ret;
 }
 
-void j1Map::Draw(float dt)
+void j1Map::Draw()
 {
 	PERF_START(scroll_timer);
 	if (map_loaded == false)
 		return;
 
-	if (scroll_timer.ReadTicks() > 10) 
+	if (!App->scene->pause)
 	{
-		scroll_speed++;
-		scroll_timer.Start();
-	}
-
-	scroll += scroll_speed;
-	scroll2 += scroll_speed/2;
-
-	if (scroll >= data.width*data.tile_width)
-	{
-		scroll = 0;
-	}
-	if (scroll2 >= data.width*data.tile_width)
-	{
-		scroll2 = 0;
-	}
-
-	for (uint lay = 0; lay < data.layers.count(); lay++)
-	{
-		for (uint set = 0; set < data.tilesets.count(); set++)
+		if (scroll_timer.ReadTicks() > 10)
 		{
-			for (int y = 0; y < data.height; y++)
+			scroll_speed++;
+			App->scene->spacing += scroll_speed * 2;
+			scroll_timer.Start();
+		}
+
+		scroll += scroll_speed;
+		scroll2 += scroll_speed / 2;
+
+		if (scroll >= data.width*data.tile_width)
+		{
+			scroll = 0;
+		}
+		if (scroll2 >= data.width*data.tile_width)
+		{
+			scroll2 = 0;
+		}
+	}
+
+		for (uint lay = 0; lay < data.layers.count(); lay++)
+		{
+			for (uint set = 0; set < data.tilesets.count(); set++)
 			{
-				for (int x = 0; x < data.width; x++)
+				for (int y = 0; y < data.height; y++)
 				{
-					int tile_id = data.layers[lay]->Get(x, y);
-					if (tile_id > 0)
+					for (int x = 0; x < data.width; x++)
 					{
-						TileSet* tileset = GetTilesetFromTileId(tile_id);
-						SDL_Rect r = tileset->GetTileRect(tile_id);
-						iPoint pos = MapToWorld(x, y);
+						int tile_id = data.layers[lay]->Get(x, y);
+						if (tile_id > 0)
+						{
+							TileSet* tileset = GetTilesetFromTileId(tile_id);
+							SDL_Rect r = tileset->GetTileRect(tile_id);
+							iPoint pos = MapToWorld(x, y);
 
-						if (data.layers[lay]->name == "Background")
-						{
-							pos.x -= scroll2;
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-							pos.x += data.width*data.tile_width;
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-						}
-						else if (data.layers[lay]->name == "Floor")
-						{
-							pos.x -= scroll;
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-							pos.x += data.width*data.tile_width;
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-						}
-						else if (data.layers[lay]->name == "Sky")
-						{
-							App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
-						}
+							if (data.layers[lay]->name == "Background")
+							{
+								pos.x -= scroll2;
+								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+								pos.x += data.width*data.tile_width;
+								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+							}
+							else if (data.layers[lay]->name == "Floor")
+							{
+								pos.x -= scroll;
+								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+								pos.x += data.width*data.tile_width;
+								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+							}
+							else if (data.layers[lay]->name == "Sky")
+							{
+								App->render->Blit(tileset->texture, pos.x, pos.y, &r, SDL_FLIP_NONE);
+							}
 
+						}
 					}
 				}
 			}
 		}
-	}
-	//if (debug == true) //debug draw
-	//{
-	//	SDL_Rect collisions;
-	//	for (p2List_item<ObjectsGroup*>* object = App->map->data.objLayers.start; object; object = object->next)
-	//	{
-	//		if (object->data->name == ("Collision"))
-	//		{
-	//			for (p2List_item<ObjectsData*>* objectdata = object->data->objects.start; objectdata; objectdata = objectdata->next)
-	//			{
-	//				collisions.x = objectdata->data->x;
-	//				collisions.y = objectdata->data->y;
-	//				collisions.w = objectdata->data->width;
-	//				collisions.h = objectdata->data->height;
-	//				if (objectdata->data->name == "Floor") //green
-	//				{
-	//					App->render->DrawQuad(collisions, 0, 255, 0, 50);
-	//				}
-	//				else if (objectdata->data->name == "Spikes") //red
-	//				{
-	//					App->render->DrawQuad(collisions, 255, 0, 0, 50);
-	//				}
-	//				else if (objectdata->data->name == "Wall") //yellow
-	//				{
-	//					App->render->DrawQuad(collisions, 255, 255, 0, 50);
-	//				}
-	//				else if (objectdata->data->name == "Grid" && objectdata->data->type == "Static") //blue
-	//				{
-	//					App->render->DrawQuad(collisions, 0, 0, 255, 50);
-	//				}
-	//				else if (objectdata->data->name == "Ceiling") //black
-	//				{
-	//					App->render->DrawQuad(collisions, 0, 0, 0, 50);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 int Properties::Get(const char* value, int default_value) const

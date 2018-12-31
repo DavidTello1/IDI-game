@@ -45,6 +45,7 @@ public:
 	iPoint speed;
 	SDL_Rect Collider;
 	bool dead;
+	bool ground;
 };
 
 #endif

@@ -26,18 +26,13 @@
     </music>
     <fx>
       <folder>audio/fx</folder>
-      <sound>Win.wav</sound>
+      <sound>Click.wav</sound>
       <sound>Dead.wav</sound>
       <sound>Game_over.wav</sound>
-      <sound>Coin.wav</sound>
-      <sound>Click.wav</sound>
-      <sound>Locked.wav</sound>
+      <sound>Jump.wav</sound>
+      <sound>Slide.wav</sound>
     </fx>
   </audio>
-
-  <gui>
-    <atlas file="gui/atlas.png"/>
-  </gui>
 
   <file_system>
     <path>data.zip</path>
@@ -50,24 +45,12 @@
   <entitycontroller>
     <folder>textures/</folder>
     <sprite_sheet source="Obstacles.png"/>
-    <player>
-      <size width="32" height="32"/>
-      <position x="64" y="500"/>
-      <gravity value="250"/>
-      <speed x="150" y="500"/>
-      <grounded value ="false"/>
-      <sliding value="false"/>
-      <jumping value="true"/>
-      <grid value="false"/>
-      <gravity_active value="true"/>
-    </player>
   </entitycontroller>
 
   <scene>
     <map_name name="level.tmx"/>
-    <fade_time value="1"/>
     <max_obstacles value="5"/>
-    <spacing value="250"/>
+    <spacing value="265"/>
   </scene>
   
   </config>

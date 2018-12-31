@@ -35,35 +35,43 @@ public:
 	bool CleanUp();
 
 	void ChangeControls();
+	void Restart();
 
 	//void UpdateState(UI_Element* data);
 	//void UpdateSimpleUI();
 
+private:
+	uint			max_obstacles;
+	Entity*			last_obstacle;
+
 public:
 
 	p2List<p2SString*> map_names;
-	uint currentMap = 0;
-	float fade_time = 0.0f;
-	bool pause = false;
-	bool godmode = false;
+	bool player_dead;
+	bool pause;
 
-	char current_score[20] = "SCORE: 0000";
 	p2List_item<p2SString>* current_track;
 	p2List_item<p2SString>* current_fx;
 
-private:
-
-	SDL_Texture*	debug_tex;
-	uint			max_obstacles;
-	Entity*			last_obstacle;
-	uint			spacing;
-
-public:
-
+	uint spacing;
 	uint num_obstacles;
-	SDL_Rect coins_bg;
-	SDL_Rect score_bg;
-	SDL_Rect timer_bg;
+
+	char save_file[20] = "save_game_0.xml";
+	uint num_saves;
+
+	char current_score[20] = "SCORE: 0000";
+	SDL_Texture* score_tex;
+	iPoint score_size;
+
+	char current_controls[80] = "CONTROLS: ";
+	SDL_Texture* controls_tex;
+	iPoint controls_size;
+	const char* controls_type;
+
+
+	bool game_over;
+	SDL_Texture* game_over_tex;
+	SDL_Rect* game_over_rect;
 
 	j1Timer timer;
 	j1Timer delay;
@@ -71,8 +79,10 @@ public:
 	//vars saved
 	int controls_used;
 	uint score;
-	uint obstacles_killed;
+	uint boxes_killed;
+	uint num_boxes;
 	Entity* obstacle_dies;
+	const char* obstacle_type;
 
 	enum Controls
 	{

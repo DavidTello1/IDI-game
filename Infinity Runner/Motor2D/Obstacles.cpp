@@ -8,7 +8,6 @@
 #include "j1Textures.h"
 #include "j1Input.h"
 #include "j1Scene.h"
-#include "j1SceneChange.h"
 #include "j1EntityController.h"
 #include "j1Entity.h"
 
@@ -21,40 +20,45 @@ Obstacles::Obstacles(entityType Type, bool Ground, iPoint pos)
 	if (type == entityType::BOX)
 	{
 		dead = false;
-		idle.PushBack({ 190,0,70,70 });
+		size = { 82,82 };
+		idle.PushBack({ 214,0,82,82 });
 		current_animation = &idle;
-
-		size = { 70,70 };
 	}
 	else if (type == entityType::SAW)
 	{
 		if (ground == true)
 		{
-			saw_ground.PushBack({ 50,70,70,35 });
-			saw_ground.PushBack({ 120,70,70,35 });
+			size = { 82,41 };
+			saw_ground.PushBack({ 50,0,82,41 });
+			saw_ground.PushBack({ 50,0,82,41 });
+			saw_ground.PushBack({ 50,0,82,41 });
+			saw_ground.PushBack({ 132,0,82,41 });
+			saw_ground.PushBack({ 132,0,82,41 });
+			saw_ground.PushBack({ 132,0,82,41 });
 			saw_ground.loop = true;
-			saw_ground.speed = 5.0f;
+			saw_ground.speed = 1.0f;
 			current_animation = &saw_ground;
-
-			size = { 70,35 };
 		}
 		else
 		{
-			idle.PushBack({ 50,0,70,70 });
-			idle.PushBack({ 50,0,70,70 });
+			size = { 82,82 };
+			idle.PushBack({ 50,0,82,82 });
+			idle.PushBack({ 50,0,82,82 });
+			idle.PushBack({ 50,0,82,82 });
+			idle.PushBack({ 132,0,82,82 });
+			idle.PushBack({ 132,0,82,82 });
+			idle.PushBack({ 132,0,82,82 });
 			idle.loop = true;
-			idle.speed = 5.0f;
+			idle.speed = 1.0f;
 			current_animation = &idle;
 
-			size = { 70,70 };
 		}
 	}
 	else if (type == entityType::WALL)
 	{
+		size = { 50,105 };
 		idle.PushBack({ 0,0,50,105 });
 		current_animation = &idle;
-
-		size = { 50,105 };
 	}
 }
 
@@ -72,22 +76,22 @@ bool Obstacles::PreUpdate()
 		}
 		else if (type == entityType::SAW)
 		{
-			position.y = App->map->data.height*App->map->data.tile_height - 105;
+			position.y = App->map->data.height*App->map->data.tile_height - 111;
 		}
 		else if (type == entityType::BOX)
 		{
-			position.y = App->map->data.height*App->map->data.tile_height - 140;
+			position.y = App->map->data.height*App->map->data.tile_height - 152;
 		}
 	}
 	else
 	{
 		if (type == entityType::WALL)
 		{
-			position.y = App->map->data.height*App->map->data.tile_height - 175 /*-player sliding.h + 15*/;
+			position.y = App->map->data.height*App->map->data.tile_height - 220;
 		}
 		else
 		{
-			position.y = App->map->data.height*App->map->data.tile_height - 140 /*-player sliding.h + 15*/;
+			position.y = App->map->data.height*App->map->data.tile_height - 192;
 		}
 	}
 	return true;
@@ -103,11 +107,26 @@ bool Obstacles::Update(float dt)
 
 bool Obstacles::PostUpdate()
 {
-	if (type == entityType::BOX && dead == true	|| position.x < -size.x)
+	if (type == entityType::BOX && dead == true)
 	{
 		App->entitycontroller->DeleteEntity(this);
 		App->scene->num_obstacles--;
+		App->scene->score++;
+		App->scene->boxes_killed++;
+		App->scene->num_boxes++;
 	}
+	if (position.x < -size.x)
+	{
+		App->entitycontroller->DeleteEntity(this);
+		App->scene->num_obstacles--;
+		App->scene->score++;
+
+		if (type == entityType::BOX)
+		{
+			App->scene->num_boxes++;
+		}
+	}
+
 
 	return true;
 }

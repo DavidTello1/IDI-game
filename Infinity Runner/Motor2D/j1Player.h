@@ -18,12 +18,6 @@ public:
 	// Destructor
 	~j1Player();
 
-	// Called before render is available
-	bool Awake(pugi::xml_node& config);
-
-	//Called before the first frame
-	bool Start();
-
 	//Called each loop iteration
 	bool PreUpdate();
 	bool Update(float dt);
@@ -49,6 +43,8 @@ public:
 	Animation	start_slide;
 	Animation	slide;
 	Animation	finish_slide;
+	Animation	attacking;
+	Animation	die;
 
 	int			floor;
 
@@ -56,9 +52,7 @@ public:
 	int			dy;
 
 	bool		jumping;
-	bool		start_sliding;
 	bool		sliding;
-	bool		finish_sliding;
 	bool		attack;
 	bool		falling;
 	bool		grounded;
@@ -66,9 +60,8 @@ public:
 	bool		is_jump;
 	bool		is_fall;
 
-	int gravity;
-	int lives;
-	int jumpSpeed;
+	float gravity;
+	float jumpSpeed;
 
 };
 #endif // !__J1PLAYER_H__
