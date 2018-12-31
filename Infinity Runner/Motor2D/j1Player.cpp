@@ -216,9 +216,39 @@ bool j1Player::PreUpdate()
 
 bool j1Player::Update(float dt)
 {
-	Collider_Overlay();
-	dy = 0;
+	for (p2List_item<Entity*>* tmp = App->entitycontroller->Entities.start; tmp != nullptr; tmp = tmp->next)
+	{
+		if (SDL_HasIntersection(&Collider, &tmp->data->Collider) && tmp->data->type != Entity::entityType::PLAYER)
+		{
+			if (tmp->data->type == Entity::entityType::BOX)
+			{
+				if (attack == true)
+				{
+					tmp->data->dead = true;
+					App->audio->PlayFx(DEAD);
+				}
+				else
+				{
+					dead = true;
+					App->scene->player_dead = true;
+					App->scene->obstacle_dies = tmp->data;
+				}
+			}
+			else
+			{
+				dead = true;
+				App->scene->player_dead = true;
+				App->scene->obstacle_dies = tmp->data;
+			}
+		}
+		else
+		{
+			dead = false;
+		}
+	}
 
+	dy = 0;
+	
 	//gravity acting first
 	if (!grounded)
 	{
@@ -313,37 +343,5 @@ void j1Player::PlayerOnFloor()
 		falling = false;
 		grounded = true;
 		LOG("grounded---------------------------------------------------------");
-	}
-}
-
-void j1Player::Collider_Overlay()
-{
-	p2List_item<Entity*>* tmp = App->entitycontroller->Entities.start;
-	while (tmp != nullptr)
-	{
-		if (SDL_HasIntersection(&Collider, &tmp->data->Collider) && tmp->data->type != entityType::PLAYER)
-		{
-			if (tmp->data->type == Entity::entityType::BOX)
-			{
-				if (attack == true)
-				{
-					tmp->data->dead = true;
-					App->audio->PlayFx(DEAD);
-				}
-				else
-				{
-					dead = true;
-					App->scene->player_dead = true;
-					App->scene->obstacle_dies = tmp->data;
-				}
-			}
-			else
-			{
-				dead = true;
-				App->scene->player_dead = true;
-				App->scene->obstacle_dies = tmp->data;
-			}
-		}
-		tmp = tmp->next;
 	}
 }

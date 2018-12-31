@@ -33,8 +33,6 @@ public:
 	void LoadAnimations();
 	void PlayerOnFloor();
 
-	void Collider_Overlay();
-
 public:
 
 	Animation	idle;

@@ -43,7 +43,6 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	max_obstacles = config.child("max_obstacles").attribute("value").as_uint();
 	spacing = config.child("spacing").attribute("value").as_uint();
 	pause = false;
-	player_dead = false;
 
 	return ret;
 }
@@ -67,7 +66,9 @@ bool j1Scene::Start()
 	last_obstacle = App->entitycontroller->AddEntity(Entity::entityType::WALL, true, { App->win->width, App->win->height });
 	num_obstacles = 1;
 	num_boxes = 0;
+	boxes_killed = 0;
 	score = 0;
+	player_dead = false;
 
 	return true;
 }
