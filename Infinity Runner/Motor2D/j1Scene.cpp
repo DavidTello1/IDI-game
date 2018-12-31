@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include "SDL_mixer\include\SDL_mixer.h"
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -43,12 +44,22 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	spacing = config.child("spacing").attribute("value").as_uint();
 	pause = false;
 	player_dead = false;
+
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene::Start()
 {
+	if (Mix_PausedMusic() > 0)
+	{
+		Mix_ResumeMusic();
+		App->audio->AdjustMusicVol(20);
+	}
+	App->audio->PlayMusic("audio/music/Endless_runner.ogg");
+	App->audio->AdjustMusicVol(50);
+	App->audio->AdjustSoundVol(30);
+
 	game_over_tex = App->tex->Load("textures/game_over.png");
 	App->map->Load(map_names.start->data->GetString());
 
@@ -104,8 +115,8 @@ bool j1Scene::Update(float dt)
 		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 		{
 			player_dead = false;
-			pause = false;
 			App->scene->Restart();
+			pause = false;
 		}
 	}
 	return true;
@@ -124,13 +135,17 @@ bool j1Scene::PostUpdate()
 		if (player_dead)
 		{
 			pause = true;
+			App->audio->PauseMusic();
 			App->audio->PlayFx(GAME_OVER);
 
 			if (obstacle_dies->type == 1) { obstacle_type = "WALL"; }
 			else if (obstacle_dies->type == 2) { obstacle_type = "BOX"; }
 			else if (obstacle_dies->type == 3) { obstacle_type = "SAW"; }
 
-			App->SavegameNow();
+			if (score > 0)
+			{
+				App->SavegameNow();
+			}
 		}
 	}
 

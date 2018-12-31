@@ -18,8 +18,6 @@ j1Player::j1Player() : Entity(entityType::PLAYER)
 	grounded = true;
 	dead = false;
 	is_jump = false;
-	want_jump = false;
-	want_slide = false;
 
 	speed.y = 0;
 	gravity = 1.2f;
@@ -66,18 +64,18 @@ j1Player::~j1Player()
 
 bool j1Player::PreUpdate()
 {
-	bool can_jump = (!jumping && !falling && !sliding && grounded);
-	bool can_slide = (!jumping && !falling && grounded);
+	bool able = (!jumping && !falling && !sliding && grounded);
 
 	if (App->scene->controls == j1Scene::Controls::WASD)
 	{
-		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && can_jump)
+		if ((App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) && able)
 		{
 			App->audio->PlayFx(JUMP);
 			jumping = true;
 		}
-		if ((App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) && can_slide)
+		if ((App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) && able)
 		{
+			App->audio->PlayFx(SLIDE);
 			sliding = true;
 			attack = false;
 		}
@@ -103,13 +101,14 @@ bool j1Player::PreUpdate()
 
 	else if (App->scene->controls == j1Scene::Controls::ARROWS)
 	{
-		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && can_jump)
+		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && able)
 		{
 			App->audio->PlayFx(JUMP);
 			jumping = true;
 		}
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && can_slide)
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && able)
 		{
+			App->audio->PlayFx(SLIDE);
 			sliding = true;
 			attack = false;
 		}
@@ -138,13 +137,14 @@ bool j1Player::PreUpdate()
 		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN || App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT)
 		{
 			App->input->GetMousePosition(click_pos.x, click_pos.y);
-			if (click_pos.y >= 0 && click_pos.y < App->win->height / 2 && can_jump)
+			if (click_pos.y >= 0 && click_pos.y < App->win->height / 2 && able)
 			{
 				App->audio->PlayFx(JUMP);
 				jumping = true;
 			}
-			else if (click_pos.y >= App->win->height / 2 && click_pos.y < App->win->height && can_slide)
+			else if (click_pos.y >= App->win->height / 2 && click_pos.y < App->win->height && able)
 			{
+				App->audio->PlayFx(SLIDE);
 				sliding = true;
 				attack = false;
 			}
@@ -171,31 +171,38 @@ bool j1Player::PreUpdate()
 
 	else if (App->scene->controls == j1Scene::Controls::DRAG_MOUSE)
 	{
-		if (want_jump && can_jump)
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN)
 		{
-			App->audio->PlayFx(JUMP);
-			jumping = true;
+			App->input->GetMousePosition(click_pos.x, click_pos.y);
+			click = true;
 		}
-		if (want_slide && can_slide)
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT && click)
 		{
-			sliding = true;
-			attack = false;
+			App->input->GetMousePosition(drag_pos.x, drag_pos.y);
+
+			if (drag_pos.y < click_pos.y && able)
+			{
+				App->audio->PlayFx(JUMP);
+				jumping = true;
+			}
+			else if (drag_pos.y > click_pos.y && able)
+			{
+				App->audio->PlayFx(SLIDE);
+				sliding = true;
+				attack = false;
+			}
 		}
 		if ((App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_DOWN || App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) && !sliding)
 		{
 			attack = true;
 		}
-		if (want_jump && sliding)
-		{
-			sliding = false;
-		}
-		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP || slide.Finished())
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP && sliding || slide.Finished())
 		{
 			position.y = floor - idle.GetCurrentFrame().h;
 			sliding = false;
 			slide.Reset();
 			slide.ResetLoops();
-			sliding = false;
+			click = false;
 		}
 		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_UP || attacking.Finished())
 		{

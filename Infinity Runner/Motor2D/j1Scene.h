@@ -50,7 +50,6 @@ public:
 	bool player_dead;
 	bool pause;
 
-	p2List_item<p2SString>* current_track;
 	p2List_item<p2SString>* current_fx;
 
 	uint spacing;

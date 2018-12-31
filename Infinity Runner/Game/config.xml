@@ -21,8 +21,7 @@
   <audio>
     <music>
       <folder>audio/music</folder>
-      <track>Best_Friend_8_bits.ogg</track>
-      <track>The_Music_Box_8_bits.ogg</track>
+      <track>Endless_runner.ogg</track>
     </music>
     <fx>
       <folder>audio/fx</folder>

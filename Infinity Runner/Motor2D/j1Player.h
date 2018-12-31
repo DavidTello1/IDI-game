@@ -64,7 +64,7 @@ public:
 	float jumpSpeed;
 
 	iPoint click_pos;
-	bool want_jump;
-	bool want_slide;
+	iPoint drag_pos;
+	bool click;
 };
 #endif // !__J1PLAYER_H__
