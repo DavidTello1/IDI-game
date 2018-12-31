@@ -180,7 +180,7 @@ void j1Scene::ChangeControls()
 	}
 	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
 	{
-		controls = UI_BUTTONS;
+		controls = MOUSE_CLICK;
 		App->audio->PlayFx(CLICK);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN)

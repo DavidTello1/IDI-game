@@ -34,9 +34,6 @@ public:
 	p2List<Entity*> Entities;
 
 	j1Player*		info;
-
-	bool want_jump;
-	bool want_slide;
 };
 
 #endif //

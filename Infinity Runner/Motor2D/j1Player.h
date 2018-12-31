@@ -63,5 +63,8 @@ public:
 	float gravity;
 	float jumpSpeed;
 
+	iPoint click_pos;
+	bool want_jump;
+	bool want_slide;
 };
 #endif // !__J1PLAYER_H__

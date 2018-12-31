@@ -88,7 +88,7 @@ public:
 	{
 		WASD,
 		ARROWS,
-		UI_BUTTONS,
+		MOUSE_CLICK,
 		DRAG_MOUSE
 	}controls;
 };

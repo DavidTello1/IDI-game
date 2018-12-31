@@ -18,6 +18,8 @@ j1Player::j1Player() : Entity(entityType::PLAYER)
 	grounded = true;
 	dead = false;
 	is_jump = false;
+	want_jump = false;
+	want_slide = false;
 
 	speed.y = 0;
 	gravity = 1.2f;
@@ -98,6 +100,7 @@ bool j1Player::PreUpdate()
 		}
 
 	}
+
 	else if (App->scene->controls == j1Scene::Controls::ARROWS)
 	{
 		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) && can_jump)
@@ -128,26 +131,78 @@ bool j1Player::PreUpdate()
 			attacking.Reset();
 			attacking.ResetLoops();
 		}
-
 	}
-	else if (App->scene->controls == j1Scene::Controls::UI_BUTTONS)
+
+	else if (App->scene->controls == j1Scene::Controls::MOUSE_CLICK)
 	{
-		if (App->entitycontroller->want_jump && can_jump)
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN || App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT)
 		{
+			App->input->GetMousePosition(click_pos.x, click_pos.y);
+			if (click_pos.y >= 0 && click_pos.y < App->win->height / 2 && can_jump)
+			{
+				App->audio->PlayFx(JUMP);
+				jumping = true;
+			}
+			else if (click_pos.y >= App->win->height / 2 && click_pos.y < App->win->height && can_slide)
+			{
+				sliding = true;
+				attack = false;
+			}
+		}
+
+		if ((App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_DOWN || App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) && !sliding)
+		{
+			attack = true;
+		}
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP && sliding || slide.Finished())
+		{
+			position.y = floor - idle.GetCurrentFrame().h;
+			sliding = false;
+			slide.Reset();
+			slide.ResetLoops();
+		}
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_UP || attacking.Finished())
+		{
+			attack = false;
+			attacking.Reset();
+			attacking.ResetLoops();
+		}
+	}
+
+	else if (App->scene->controls == j1Scene::Controls::DRAG_MOUSE)
+	{
+		if (want_jump && can_jump)
+		{
+			App->audio->PlayFx(JUMP);
 			jumping = true;
 		}
-		if (App->entitycontroller->want_slide && can_slide)
+		if (want_slide && can_slide)
 		{
 			sliding = true;
+			attack = false;
 		}
-		if (App->entitycontroller->want_jump && sliding)
+		if ((App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_DOWN || App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) && !sliding)
+		{
+			attack = true;
+		}
+		if (want_jump && sliding)
 		{
 			sliding = false;
 		}
-	}
-	else if (App->scene->controls == j1Scene::Controls::DRAG_MOUSE)
-	{
-		
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP || slide.Finished())
+		{
+			position.y = floor - idle.GetCurrentFrame().h;
+			sliding = false;
+			slide.Reset();
+			slide.ResetLoops();
+			sliding = false;
+		}
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_UP || attacking.Finished())
+		{
+			attack = false;
+			attacking.Reset();
+			attacking.ResetLoops();
+		}
 	}
 	return true;
 }

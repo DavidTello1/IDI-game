@@ -22,11 +22,7 @@ j1EntityController::~j1EntityController()
 bool j1EntityController::Awake(pugi::xml_node &config)
 {
 	folder.create(config.child("folder").child_value());
-	texture_path = config.child("sprite_sheet").attribute("source").as_string();
-
-	want_jump = false;
-	want_slide = false;
-	
+	texture_path = config.child("sprite_sheet").attribute("source").as_string();	
 	return true;
 }
 
