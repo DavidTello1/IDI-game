@@ -214,6 +214,8 @@ void j1Scene::Restart()
 	App->map->scroll = 0;
 	App->map->scroll2 = 0;
 	App->scene->spacing = 265;
+	App->map->scroll_speed = 8;
+	player_dead = false;
 	Start();
 }
 
