@@ -69,6 +69,7 @@ bool j1Scene::Start()
 	boxes_killed = 0;
 	score = 0;
 	player_dead = false;
+	App->map->scroll_timer.Start();
 
 	return true;
 }
@@ -115,8 +116,14 @@ bool j1Scene::Update(float dt)
 		App->render->Blit(game_over_tex, App->win->width / 2 - 313, App->win->height / 2 - 250);
 		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 		{
-			player_dead = false;
-			App->scene->Restart();
+			App->tex->UnLoad(game_over_tex);
+			App->entitycontroller->DeleteEntities();
+			App->map->CleanUp();
+			App->map->scroll = 0;
+			App->map->scroll2 = 0;
+			App->scene->spacing = 265;
+			App->map->scroll_speed = 8;
+			Start();
 			pause = false;
 		}
 	}
@@ -131,22 +138,19 @@ bool j1Scene::PostUpdate()
 		return false;
 	}
 
-	if (!pause)
+	if (!pause && player_dead == true)
 	{
-		if (player_dead)
+		pause = true;
+		App->audio->PauseMusic();
+		App->audio->PlayFx(GAME_OVER);
+
+		if (obstacle_dies->type == 1) { obstacle_type = "WALL"; }
+		else if (obstacle_dies->type == 2) { obstacle_type = "BOX"; }
+		else if (obstacle_dies->type == 3) { obstacle_type = "SAW"; }
+
+		if (score > 0)
 		{
-			pause = true;
-			App->audio->PauseMusic();
-			App->audio->PlayFx(GAME_OVER);
-
-			if (obstacle_dies->type == 1) { obstacle_type = "WALL"; }
-			else if (obstacle_dies->type == 2) { obstacle_type = "BOX"; }
-			else if (obstacle_dies->type == 3) { obstacle_type = "SAW"; }
-
-			if (score > 0)
-			{
-				App->SavegameNow();
-			}
+			App->SavegameNow();
 		}
 	}
 
@@ -204,19 +208,6 @@ void j1Scene::ChangeControls()
 		controls = DRAG_MOUSE;
 		App->audio->PlayFx(CLICK);
 	}
-}
-
-void j1Scene::Restart()
-{
-	App->tex->UnLoad(game_over_tex);
-	App->entitycontroller->DeleteEntities();
-	App->map->CleanUp();
-	App->map->scroll = 0;
-	App->map->scroll2 = 0;
-	App->scene->spacing = 265;
-	App->map->scroll_speed = 8;
-	player_dead = false;
-	Start();
 }
 
 //void j1Scene::UpdateState(UI_Element* data)

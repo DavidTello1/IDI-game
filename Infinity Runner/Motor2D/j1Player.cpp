@@ -15,6 +15,7 @@ j1Player::j1Player() : Entity(entityType::PLAYER)
 	jumping = false;
 	sliding = false;
 	falling = false;
+	attack = false;
 	grounded = true;
 	dead = false;
 	is_jump = false;
@@ -241,10 +242,6 @@ bool j1Player::Update(float dt)
 				App->scene->obstacle_dies = tmp->data;
 			}
 		}
-		else
-		{
-			dead = false;
-		}
 	}
 
 	dy = 0;
@@ -284,7 +281,15 @@ bool j1Player::Update(float dt)
 bool j1Player::PostUpdate()
 {
 	position.y += dy;
-	PlayerOnFloor();
+
+	if (position.y + Collider.h >= floor)
+	{
+		position.y = floor - Collider.h;
+		speed.y = 0;
+		falling = false;
+		grounded = true;
+	}
+
 	return true;
 }
 
@@ -330,18 +335,4 @@ void j1Player::LoadAnimations()
 	this->slide = App->entitycontroller->info->slide;
 	this->start_slide = App->entitycontroller->info->finish_slide;
 	this->jump = App->entitycontroller->info->jump;
-}
-
-void j1Player::PlayerOnFloor()
-{
-	if (!grounded)
-		LOG("-------------------------------------------------------------------00");
-	if (position.y + Collider.h >= floor)
-	{
-		position.y = floor - Collider.h;
-		speed.y = 0;
-		falling = false;
-		grounded = true;
-		LOG("grounded---------------------------------------------------------");
-	}
 }

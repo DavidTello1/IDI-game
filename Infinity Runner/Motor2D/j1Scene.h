@@ -35,7 +35,6 @@ public:
 	bool CleanUp();
 
 	void ChangeControls();
-	void Restart();
 
 	//void UpdateState(UI_Element* data);
 	//void UpdateSimpleUI();
